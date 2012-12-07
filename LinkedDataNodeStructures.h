@@ -2,24 +2,22 @@
 #define LINKED_DATA_NODE_STRUCTURES_H
 
 /*
-* Data Structure: CheckedOutInfoNode
+* Data Structure: ListNode
 * ----------------------------------
 *
-* Represents checked out information.
-* ItemNode will use it to track patrons.
-* PatronNode will use it to track Items.
+* Represents a generic list node for linked lists.
 *
-* @relevantNode -> Node containing relevant check out information.
-* @next ---------> Next CheckedOutInfoNode in list.
+* @data ------------------> Generic data, most likely PatronData or ItemData struct.
+* @next ------------------> Next linked list node.
 *
 */
-typedef struct _CheckedOutInfoNode {
-	void* relevantNode;
-	struct _CheckedOutInfoNode* next;
-} CheckedOutInfoNode;
+typedef stuct _ListNode {
+	void* data;
+	struct _ListNode* next;
+} ListNode;
 
 /*
-* Data Structure: ItemNode
+* ItemData
 * ----------------------------------
 *  
 * Represents a library item.
@@ -29,35 +27,32 @@ typedef struct _CheckedOutInfoNode {
 * @cid ---------------------> Item's catalog ID.
 * @numCopies ---------------> Number of copies library owns.
 * @patronsCurrentlyRenting -> Linked list of void* to patrons renting item.
-* @next --------------------> Next item node in inventory.
 *
 */
-typedef struct _ItemNode {
+typedef struct {
 	char* author;
 	char* title;
 	char* cid;
 	// allows 0-127
 	unsigned int numCopies:7;
-	CheckedOutInfoNode* patronsCurrentlyRenting;
-	struct _ItemNode* next;
-} ItemNode;
+	ListNode* patronsCurrentlyRenting;
+} ItemData;
 
 /*
-* Data Structure: PatronNode
+* PatronData
 * ----------------------------------
 *
 * Represents a library patron.
 *
 * @name ------------------> Patron's name.
 * @pid -------------------> Patron's ID.
-* @next ------------------> Next patron node in patron list.
 * @itemsCurrentlyRenting -> Linked list of void* to items curently renting.
 *
 */
-typedef struct _PatronNode {
+typedef struct {
 	char* name;
 	char pid[ 5 ];
-	struct _PatronNode* next;
-	CheckedOutInfoNode* itemsCurrentlyRenting;
-} PatronNode;
+	ListNode* itemsCurrentlyRenting;
+} PatronData;
+
 #endif
