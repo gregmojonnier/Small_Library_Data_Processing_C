@@ -51,7 +51,7 @@ typedef struct {
 */
 typedef struct {
 	char* name;
-	char pid[ 5 ];
+	char pid[ 6 ];
 	ListNode* itemsCurrentlyRenting;
 } PatronData;
 

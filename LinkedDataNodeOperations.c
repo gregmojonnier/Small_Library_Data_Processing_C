@@ -1,6 +1,7 @@
 #include "LinkedDataNodeOperations.h"
 #include <allocate.h>
 #include <stdio.h>
+#include <string.h>
 
 
 _Bool insertNodeAtHead( ListNode** currentHead, void* data ){
@@ -97,4 +98,45 @@ void printPatronLinkedList( ListNode* headNode ){
 		patronToPrint = patronToPrint->next;
 	}
 }
+
+
+_Bool doesPatronMatchUID( const char* uid, void* data ){
+	PatronData* p = (PatronData*)data; 
+	if( p == NULL ){
+		return 0;
+	}
+			puts("We will be returning \n \n");
+	printf("is this %i\n", strcmp( p->pid, uid ) );
+	printf("equal to 0? %i\n", ( strcmp( p->pid, uid ) == 0 ) );
+	return ( strcmp( p->pid, uid ) == 0 );
+}
+
+_Bool doesItemMatchUID( const char* uid, void* data ){
+	ItemData* i = (ItemData*)data; 
+	if( i == NULL ){
+		return 0;
+	}
+	return ( strcmp( i->cid, uid ) == 0 );
+}
+
+ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) ){
+	if( currentHead == NULL ){
+		return NULL;
+	}
+	
+	ListNode* nodeToCheck = currentHead;
+
+	while( nodeToCheck != NULL ){
+
+		if( (*doesDataMatchUID)( uid, nodeToCheck->data ) ){
+			puts("-------FOUND THE MATCH-------");
+			break;
+		}
+		nodeToCheck = nodeToCheck->next;
+	}
+	return nodeToCheck;
+}
+
+
+
 

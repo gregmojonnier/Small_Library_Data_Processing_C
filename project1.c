@@ -71,9 +71,13 @@ void TestLinkedListStuff(){
 
 // normally name attributes will be dynamically allocated
 	p1->name = "John Smith";
+	char* pid1 = "abcd8";
+	strcpy(p1->pid, pid1);
 
 	PatronData* p2 = (PatronData*) allocate( sizeof(PatronData) );
 	p2->name = "Tim Daniels";
+	char* pid = "fafas";
+	strcpy(p2->pid, pid);
 
 	if( !insertNodeAtHead( &head, (void*)p1 ) ){
 		puts("Error inserting node at head.");
@@ -85,6 +89,20 @@ void TestLinkedListStuff(){
 		puts("Error inserting node at head.");
 	}
 	printPatronLinkedList( head );
+
+
+	puts("Attempting to find John smith based on his PID.");
+	
+	ListNode* linkToJohn;
+	if( linkToJohn = findNodeWithUID( head, pid1, doesPatronMatchUID ) ){
+		puts("We found him!");
+		printf("the node data we got is %s\n", ((PatronData*)(linkToJohn->data))->name );
+
+	}
+	else{
+		puts("We did not find him.");
+	}
+	
 
 	deleteAndFreeList( head, freePatronDataStruct );
 	//unallocate( p1 );
