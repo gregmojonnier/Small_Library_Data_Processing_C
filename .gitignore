@@ -21,3 +21,6 @@ Tests/
 
 # Project 1 executable
 project1
+
+# Supplied allocate library
+MAX_MEMORY_USED

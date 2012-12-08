@@ -14,8 +14,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ProcessCommands.h"
+#include "LinkedDataNodeOperations.h"
+#include <allocate.h>
+
+void TestLinkedListStuff();
+
 
 int main( int argc, char *argv[] ){
+	TestLinkedListStuff();
 
 	// User must supply patron_file and item_file
 	if( argc != 3 ){
@@ -49,17 +55,38 @@ int main( int argc, char *argv[] ){
 
 
 
-
-
-
-
-
-
-
-
-
 	fclose( initialPatronsFile );
 	fclose( initialItemsFile );
 
 	return( EXIT_SUCCESS );
+}
+
+void TestLinkedListStuff(){
+
+// This type of linked list adding/removing will eventually
+// go in ProcessCommands to help build the list
+	ListNode* head = NULL;
+
+	PatronData* p1 = (PatronData*) allocate( sizeof(PatronData) );
+
+// normally name attributes will be dynamically allocated
+	p1->name = "John Smith";
+
+	PatronData* p2 = (PatronData*) allocate( sizeof(PatronData) );
+	p2->name = "Tim Daniels";
+
+	if( !insertNodeAtHead( &head, (void*)p1 ) ){
+		puts("Error inserting node at head.");
+	}
+
+	printPatronLinkedList( head );
+
+	if( !insertNodeAtHead( &head, (void*)p2 ) ){
+		puts("Error inserting node at head.");
+	}
+	printPatronLinkedList( head );
+
+	deleteAndFreeList( head, freePatronDataStruct );
+	//unallocate( p1 );
+	//unallocate( p2 );
 }

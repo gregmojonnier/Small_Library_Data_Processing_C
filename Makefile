@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Sep  7 2011) on Thu Dec  6 20:54:43 2012
+# Created by gmakemake (Ubuntu Sep  7 2011) on Sat Dec  8 03:11:11 2012
 #
 
 #
@@ -64,13 +64,13 @@ CLIBFLAGS =	$(LIBFLAGS)
 
 
 CPP_FILES =	
-C_FILES =	project1.c
+C_FILES =	LinkedDataNodeOperations.c ProcessCommands.c project1.c
 PS_FILES =	
 S_FILES =	
-H_FILES =	
+H_FILES =	LinkedDataNodeOperations.h LinkedDataNodeStructures.h ProcessCommands.h
 SOURCEFILES =	$(H_FILES) $(CPP_FILES) $(C_FILES) $(S_FILES)
 .PRECIOUS:	$(SOURCEFILES)
-OBJFILES =	
+OBJFILES =	LinkedDataNodeOperations.o ProcessCommands.o 
 
 #
 # Main targets
@@ -85,7 +85,9 @@ project1:	project1.o $(OBJFILES)
 # Dependencies
 #
 
-project1.o:	
+LinkedDataNodeOperations.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h
+ProcessCommands.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h ProcessCommands.h
+project1.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h ProcessCommands.h
 
 #
 # Housekeeping

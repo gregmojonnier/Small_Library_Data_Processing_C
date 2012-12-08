@@ -11,7 +11,7 @@
 * @next ------------------> Next linked list node.
 *
 */
-typedef stuct _ListNode {
+typedef struct _ListNode {
 	void* data;
 	struct _ListNode* next;
 } ListNode;
