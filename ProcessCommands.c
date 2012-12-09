@@ -76,3 +76,41 @@ int getCopiesAvailable( ListNode* head, const char* cid ){
 	printf("Item %s (%s/%s) %i of %i copies available\n", cid, item->author, item->title, copiesCheckedOut, item->numCopies );
 	return (item->numCopies - copiesCheckedOut);
 }
+
+_Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid, const char* cid ){
+	ListNode* patronNode = findNodeWithUID( *patronsHead, pid, doesPatronMatchUID );
+	if( patronNode == NULL ){
+		fprintf( stderr, "%s does not exist\n", pid);
+		return 0;
+	}
+	ListNode* itemNode = findNodeWithUID( *itemsHead, cid, doesItemMatchUID );
+	
+	if( itemNode == NULL ){
+		fprintf( stderr, "%s does not exist\n", cid );
+		return 0;
+	}
+
+	ItemData* item = (ItemData*)itemNode;
+	
+	if( getListSize( item->patronsCurrentlyRenting ) == item->numCopies ){
+		fprintf( stderr, "No more copies of %s are available\n", cid );
+		return 0;
+	}
+
+	PatronData* patron = (PatronData*) patronNode;
+	if( getListSize( patron->itemsCurrentlyRenting ) == 5 ){
+		fprintf( stderr, "%s cannot check out any more items\n", pid );
+		return 0;
+	}
+
+	if( findNodeWithData( patron->itemsCurrentlyRenting, &(*itemNode) ) != NULL ){
+		fprintf( stderr, "%s already has %s checked out\n", pid, cid );
+		return 0;
+	}
+
+	if( insertNodeAtHead( &patron->itemsCurrentlyRenting, &(*itemNode) ) && insertNodeAtHead( &item->patronsCurrentlyRenting, &(*patronNode) ) ){
+		return 1;
+	}
+	return 0;
+}
+
