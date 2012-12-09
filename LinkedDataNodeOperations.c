@@ -253,6 +253,15 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoi
 	return 0;
 }
 
+int getListSize( ListNode* head ){
 
+	ListNode* currentNode = head;
+	int size = 0;
 
+	while( currentNode != NULL ){
+		++size;
+		currentNode = currentNode->next;
+	}
+	return size;
+}
 

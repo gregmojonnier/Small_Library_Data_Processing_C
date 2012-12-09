@@ -12,5 +12,6 @@ _Bool doesItemMatchUID( const char* uid, void* data );
 ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) );
 ListNode* findNodeWithData( ListNode* currentHead, void* data );
 _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) );
+int getListSize( ListNode* head );
 
 #endif
