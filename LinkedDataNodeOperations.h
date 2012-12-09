@@ -10,4 +10,10 @@ void printPatronLinkedList( ListNode* headNode );
 _Bool doesPatronMatchUID( const char* uid, void* data );
 _Bool doesItemMatchUID( const char* uid, void* data );
 ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) );
+ListNode* findNodeWithData( ListNode* currentHead, void* data );
+
+// take appropriate freeDataFunction?
+_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete );
+//_Bool cleanUpRentalLinks( void* rentalAddressToClean,
+
 #endif

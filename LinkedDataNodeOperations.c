@@ -61,6 +61,28 @@ _Bool freePatronDataStruct( void* patron ){
 	ListNode* nodeToDelete = p->itemsCurrentlyRenting;
 	while( nodeToDelete != NULL ){
 		ListNode* next = nodeToDelete->next;
+	
+		// this is a node
+		// it has a void* data which contains an address of a listnode
+		// whom contains a void* data to an item
+	
+		// go to this other listnode and cast its void* data to an item
+		// within this item loop through its patronsCurrentlyrenting LL
+		// find the node containg a void* data with the patrons address
+		// delete this node
+
+
+		// Get data, its a pointer to a ListNode containing an item
+		ListNode* itemToReturnNode = (ListNode*)nodeToDelete->data;
+		ItemData* itemToReturn = (ItemData*)itemToReturnNode->data;
+		// find listnode with data address of p
+
+		ListNode* pcr = itemToReturn->patronsCurrentlyRenting;
+
+		deleteNode( &pcr, findNodeWithData( pcr, p ) );
+
+
+
 		unallocate( nodeToDelete );
 		nodeToDelete = next;
 	}
@@ -102,7 +124,7 @@ void printPatronLinkedList( ListNode* headNode ){
 
 _Bool doesPatronMatchUID( const char* uid, void* data ){
 	PatronData* p = (PatronData*)data; 
-	if( p == NULL ){
+	if( uid == NULL || p == NULL ){
 		return 0;
 	}
 			puts("We will be returning \n \n");
@@ -113,14 +135,14 @@ _Bool doesPatronMatchUID( const char* uid, void* data ){
 
 _Bool doesItemMatchUID( const char* uid, void* data ){
 	ItemData* i = (ItemData*)data; 
-	if( i == NULL ){
+	if( uid == NULL || i == NULL ){
 		return 0;
 	}
 	return ( strcmp( i->cid, uid ) == 0 );
 }
 
 ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) ){
-	if( currentHead == NULL ){
+	if( currentHead == NULL || uid == NULL ){
 		return NULL;
 	}
 	
@@ -135,6 +157,69 @@ ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDa
 		nodeToCheck = nodeToCheck->next;
 	}
 	return nodeToCheck;
+}
+
+ListNode* findNodeWithData( ListNode* currentHead, void* data ){
+
+	if( currentHead == NULL ){
+		return NULL;
+	}
+	
+	ListNode* nodeToCheck = currentHead;
+
+	while( nodeToCheck != NULL ){
+
+		if( nodeToCheck->data == data ){
+			puts("-------FOUND THE MATCH-------");
+			break;
+		}
+		nodeToCheck = nodeToCheck->next;
+	}
+	return nodeToCheck;
+}
+
+_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete ){
+	// The address of the outside variable is NULL???
+	// or its an empty list or nodeToDelete is null
+	// return false
+	if( currentHead == NULL || *currentHead == NULL || nodeToDelete == NULL ){
+		return 0;
+	}
+	// special case if head is node to delete
+	if( *currentHead == nodeToDelete ){
+
+		// take out of list
+		// if only element in list next is null
+		// when outside ptr is dereferenced goes to ptr to next
+		*currentHead = nodeToDelete->next;
+
+		// delete everything related to nodeToDelete
+
+
+
+		return 1;
+	}
+
+	ListNode* nodeToCheck = *currentHead;
+
+	while( nodeToCheck != NULL ){
+		ListNode* nextNode = nodeToCheck->next;
+
+		if( nextNode == nodeToDelete ){
+			
+			// take nextNode out of list
+			nodeToCheck->next = nextNode->next;
+			puts("-------FOUND THE MATCH-------");
+
+
+			// DELETE EVERYTHING RELATED TO NEXTNODE
+
+
+			return 1;
+		}
+		nodeToCheck = nextNode;
+	}
+	return 0;
 }
 
 
