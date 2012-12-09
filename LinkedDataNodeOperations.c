@@ -40,7 +40,20 @@ _Bool freeItemDataStruct( void* item ){
 	ListNode* nodeToDelete = i->patronsCurrentlyRenting;
 	while( nodeToDelete != NULL ){
 		ListNode* next = nodeToDelete->next;
+
+
+		// Get data, its a pointer to a ListNode containing an patron
+		ListNode* patronToCollectItemFromNode = (ListNode*)nodeToDelete->data;
+		PatronData* patronToCollectFrom = (PatronData*)patronToCollectItemFromNode->data;
+		// find listnode with data address of p
+
+		ListNode* pcr = patronToCollectFrom->itemsCurrentlyRenting;
+
+		deleteNode( &pcr, findNodeWithData( pcr, i ), NULL );
+
+
 		unallocate( nodeToDelete );
+
 		nodeToDelete = next;
 	}
 	unallocate( i );
@@ -79,7 +92,7 @@ _Bool freePatronDataStruct( void* patron ){
 
 		ListNode* pcr = itemToReturn->patronsCurrentlyRenting;
 
-		deleteNode( &pcr, findNodeWithData( pcr, p ) );
+		deleteNode( &pcr, findNodeWithData( pcr, p ), NULL );
 
 
 
@@ -98,9 +111,14 @@ _Bool deleteAndFreeList( ListNode* currentHead, _Bool(*freeVoidDataFunction)(voi
 
 	ListNode* nodeToDelete = currentHead;
 	while( nodeToDelete != NULL ){
-		// check result of this?
-		(*freeVoidDataFunction)(nodeToDelete->data);
 		ListNode* next = nodeToDelete->next;
+		// check result of this?
+
+		// if null then void* data is just a pointer
+		// so no special freeing is needed
+		if( freeVoidDataFunction != NULL ){
+			(*freeVoidDataFunction)(nodeToDelete->data);
+		}
 		unallocate( nodeToDelete );
 		nodeToDelete = next;
 	}
@@ -178,7 +196,7 @@ ListNode* findNodeWithData( ListNode* currentHead, void* data ){
 	return nodeToCheck;
 }
 
-_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete ){
+_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) ){
 	// The address of the outside variable is NULL???
 	// or its an empty list or nodeToDelete is null
 	// return false
@@ -187,7 +205,7 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete ){
 	}
 	// special case if head is node to delete
 	if( *currentHead == nodeToDelete ){
-
+ 
 		// take out of list
 		// if only element in list next is null
 		// when outside ptr is dereferenced goes to ptr to next
@@ -195,6 +213,13 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete ){
 
 		// delete everything related to nodeToDelete
 
+		// DELETE EVERYTHING RELATED TO NEXTNODE
+		// if null then void* data is just a pointer
+		// so no special freeing is needed
+		if( freeVoidDataFunction != NULL ){
+			(*freeVoidDataFunction)(nodeToDelete->data);
+		}
+		unallocate( nodeToDelete );
 
 
 		return 1;
@@ -213,6 +238,12 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete ){
 
 
 			// DELETE EVERYTHING RELATED TO NEXTNODE
+			// if null then void* data is just a pointer
+			// so no special freeing is needed
+			if( freeVoidDataFunction != NULL ){
+				(*freeVoidDataFunction)(nextNode->data);
+			}
+			unallocate( nextNode );
 
 
 			return 1;

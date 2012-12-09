@@ -68,14 +68,19 @@ void TestLinkedListStuff(){
 	ListNode* head = NULL;
 
 	PatronData* p1 = (PatronData*) allocate( sizeof(PatronData) );
+	char* name1 = "John Smith";
+	p1->name = (char*) allocate( ( sizeof(char) * strlen(name1) ) + 1 );
+	strcpy( p1->name, name1 );
 
-// normally name attributes will be dynamically allocated
-	p1->name = "John Smith";
 	char* pid1 = "abcd8";
 	strcpy(p1->pid, pid1);
 
 	PatronData* p2 = (PatronData*) allocate( sizeof(PatronData) );
-	p2->name = "Tim Daniels";
+	char* name2 = "Tim Daniels";
+	p2->name = (char*) allocate( ( sizeof(char) * strlen(name2) ) + 1 );
+	strcpy( p2->name, name2 );
+
+
 	char* pid = "fafas";
 	strcpy(p2->pid, pid);
 
@@ -102,9 +107,16 @@ void TestLinkedListStuff(){
 	else{
 		puts("We did not find him.");
 	}
+
+	deleteNode( &head, findNodeWithUID( head, pid1, doesPatronMatchUID ), freePatronDataStruct );
 	
+	
+	puts("----------------------------");
+	puts("we just attempted to delete John Smith alone.\n");
+	printPatronLinkedList( head );
 
 	deleteAndFreeList( head, freePatronDataStruct );
+	//deleteAndFreeList( head, NULL );
 	//unallocate( p1 );
 	//unallocate( p2 );
 }
