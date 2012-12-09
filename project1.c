@@ -63,60 +63,31 @@ int main( int argc, char *argv[] ){
 
 void TestLinkedListStuff(){
 
-// This type of linked list adding/removing will eventually
-// go in ProcessCommands to help build the list
-	ListNode* head = NULL;
+	ListNode* patronsHead = NULL;
 
-	PatronData* p1 = (PatronData*) allocate( sizeof(PatronData) );
-	char* name1 = "John Smith";
-	p1->name = (char*) allocate( ( sizeof(char) * strlen(name1) ) + 1 );
-	strcpy( p1->name, name1 );
-
-	char* pid1 = "abcd8";
-	strcpy(p1->pid, pid1);
-
-	PatronData* p2 = (PatronData*) allocate( sizeof(PatronData) );
-	char* name2 = "Tim Daniels";
-	p2->name = (char*) allocate( ( sizeof(char) * strlen(name2) ) + 1 );
-	strcpy( p2->name, name2 );
+	addPatron( &patronsHead, "p15369", "Greg M" );
+	printPatronLinkedList( patronsHead );
+	addPatron( &patronsHead, "p34831", "Harry Y" );
+	printPatronLinkedList( patronsHead );
+	addPatron( &patronsHead, "p34831", "Herb I" );
+	printPatronLinkedList( patronsHead );
+	addPatron( &patronsHead, "p97223", "Sarah S" );
+	printPatronLinkedList( patronsHead );
+	deleteAndFreeList( patronsHead, freePatronDataStruct );
 
 
-	char* pid = "fafas";
-	strcpy(p2->pid, pid);
+	ListNode* itemsHead = NULL;
 
-	if( !insertNodeAtHead( &head, (void*)p1 ) ){
-		puts("Error inserting node at head.");
-	}
+	addItem( &itemsHead, 4, "c135923", "Roth R", "Wonderful Book" );
+	printf("Copies available are %i\n", getCopiesAvailable( itemsHead, "c135923" ) );
+	printItemLinkedList( itemsHead );
+	addItem( &itemsHead, 8, "c328424", "J K", "Once Upon A Time" );
+	printf("Copies available are %i\n", getCopiesAvailable( itemsHead, "c328424" ) );
+	printItemLinkedList( itemsHead );
+	addItem( &itemsHead, 2, "c988383", "Roth R", "Wonderful Book pt 2" );
+	printf("Copies available are %i\n", getCopiesAvailable( itemsHead, "c988383" ) );
+	printItemLinkedList( itemsHead );
 
-	printPatronLinkedList( head );
-
-	if( !insertNodeAtHead( &head, (void*)p2 ) ){
-		puts("Error inserting node at head.");
-	}
-	printPatronLinkedList( head );
-
-
-	puts("Attempting to find John smith based on his PID.");
-	
-	ListNode* linkToJohn;
-	if( linkToJohn = findNodeWithUID( head, pid1, doesPatronMatchUID ) ){
-		puts("We found him!");
-		printf("the node data we got is %s\n", ((PatronData*)(linkToJohn->data))->name );
-
-	}
-	else{
-		puts("We did not find him.");
-	}
-
-	deleteNode( &head, findNodeWithUID( head, pid1, doesPatronMatchUID ), freePatronDataStruct );
-	
-	
-	puts("----------------------------");
-	puts("we just attempted to delete John Smith alone.\n");
-	printPatronLinkedList( head );
-
-	deleteAndFreeList( head, freePatronDataStruct );
-	//deleteAndFreeList( head, NULL );
-	//unallocate( p1 );
-	//unallocate( p2 );
+	printf("The list size is %i\n", getListSize( itemsHead ) );
+	deleteAndFreeList( itemsHead, freeItemDataStruct );
 }

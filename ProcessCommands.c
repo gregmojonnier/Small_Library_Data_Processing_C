@@ -5,9 +5,13 @@
 #include <stdio.h>
 
 
-_Bool addPatron( ListNode* head, const char* pid, const char* name ){
+_Bool addPatron( ListNode** head, const char* pid, const char* name ){
+	if( head == NULL ){
+		return 0;
+	}
+
 	ListNode* existingPatron;
-	if( ( existingPatron = findNodeWithUID( head, pid, doesPatronMatchUID ) ) != NULL ){
+	if( ( existingPatron = findNodeWithUID( *head, pid, doesPatronMatchUID ) ) != NULL ){
 		fprintf( stderr, "Patron %s %s already associated with %s\n", pid, name, ((PatronData*)existingPatron->data)->name );
 		return 0;
 	}
@@ -18,16 +22,19 @@ _Bool addPatron( ListNode* head, const char* pid, const char* name ){
 	strcpy( p->pid, pid );
 	p->itemsCurrentlyRenting = NULL;
 
-	if( !insertNodeAtHead( &head, (void*)p ) ){
+	if( !insertNodeAtHead( &(*head), (void*)p ) ){
 		return 0;
 	}
 	return 1;
 }
 
-_Bool addItem( ListNode* head, int numCopies, const char* cid, const char* author, const char* title ){
+_Bool addItem( ListNode** head, int numCopies, const char* cid, const char* author, const char* title ){
+	if( head == NULL ){
+		return 0;
+	}
 
 	ListNode* existingItemNode;
-	if( ( existingItemNode = findNodeWithUID( head, cid, doesItemMatchUID ) ) != NULL ){
+	if( ( existingItemNode = findNodeWithUID( *head, cid, doesItemMatchUID ) ) != NULL ){
 		ItemData* existingItem = (ItemData*)existingItemNode;
 		fprintf( stderr, "Item %s (%s/%s) already associated with (%s/%s)\n", cid, author, title, existingItem->author, existingItem->title ); 
 		return 0;
@@ -44,51 +51,28 @@ _Bool addItem( ListNode* head, int numCopies, const char* cid, const char* autho
 	strcpy( i->author, author );
 	strcpy( i->title, title );
 	
-	if( !insertNodeAtHead( &head, (void*)i ) ){
+	if( !insertNodeAtHead( &(*head), (void*)i ) ){
 		return 0;
 	}
 	return 1;
 }
 
 int getCopiesAvailable( ListNode* head, const char* cid ){
+	
+	if( head == NULL ){
+		return 0;
+	}
 
-	ListNode* itemNode = findNodeWithUID( head, cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( &(*head), cid, doesItemMatchUID );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;
 	}	
 	
-	ItemData* item = (ItemData*)itemNode;
+	ItemData* item = (ItemData*)itemNode->data;
 	ListNode* patronsRenting = item->patronsCurrentlyRenting;
 	int copiesCheckedOut = getListSize( patronsRenting );
 
-	printf("Item %s (%s/%s) %i of %i copies available", cid, item->author, item->title, copiesCheckedOut, item->numCopies );
-	return item->numCopies - copiesCheckedOut;
-}
-
-void placeholder(){
-/*
-	printPatronLinkedList( head );
-
-	puts("Attempting to find John smith based on his PID.");
-	
-	ListNode* linkToJohn;
-	if( linkToJohn = findNodeWithUID( head, pid1, doesPatronMatchUID ) ){
-		puts("We found him!");
-		printf("the node data we got is %s\n", ((PatronData*)(linkToJohn->data))->name );
-
-	}
-	else{
-		puts("We did not find him.");
-	}
-
-	deleteNode( &head, findNodeWithUID( head, pid1, doesPatronMatchUID ), freePatronDataStruct );
-	
-	
-	puts("----------------------------");
-	puts("we just attempted to delete John Smith alone.\n");
-	printPatronLinkedList( head );
-
-	deleteAndFreeList( head, freePatronDataStruct );
-*/
+	printf("Item %s (%s/%s) %i of %i copies available\n", cid, item->author, item->title, copiesCheckedOut, item->numCopies );
+	return (item->numCopies - copiesCheckedOut);
 }

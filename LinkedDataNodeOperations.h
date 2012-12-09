@@ -13,5 +13,6 @@ ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDa
 ListNode* findNodeWithData( ListNode* currentHead, void* data );
 _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) );
 int getListSize( ListNode* head );
+void printItemLinkedList( ListNode* headNode );
 
 #endif

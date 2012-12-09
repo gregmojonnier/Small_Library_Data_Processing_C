@@ -129,6 +129,7 @@ _Bool deleteAndFreeList( ListNode* currentHead, _Bool(*freeVoidDataFunction)(voi
 
 void printPatronLinkedList( ListNode* headNode ){
 
+	puts("--------------------------");
 	ListNode* patronToPrint = headNode;
 
 	while( patronToPrint != NULL ){
@@ -137,6 +138,21 @@ void printPatronLinkedList( ListNode* headNode ){
 		printf("Patron: %s\n", patronData->name);
 		patronToPrint = patronToPrint->next;
 	}
+	puts("--------------------------");
+}
+
+void printItemLinkedList( ListNode* headNode ){
+
+	puts("--------------------------");
+	ListNode* itemToPrint = headNode;
+
+	while( itemToPrint != NULL ){
+		void* _itemData = itemToPrint->data;
+		ItemData* itemData = (ItemData*) _itemData;
+		printf("Item: %s\n", itemData->title);
+		itemToPrint = itemToPrint->next;
+	}
+	puts("--------------------------");
 }
 
 
