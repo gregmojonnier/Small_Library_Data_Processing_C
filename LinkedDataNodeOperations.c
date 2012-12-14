@@ -102,6 +102,7 @@ _Bool freePatronDataStruct( void* patron ){
 	unallocate( p );
 	return 1;
 }
+
 _Bool deleteAndFreeList( ListNode* currentHead, _Bool(*freeVoidDataFunction)(void* data) ){
 
 	if( currentHead == NULL ){
@@ -161,9 +162,7 @@ _Bool doesPatronMatchUID( const char* uid, void* data ){
 	if( uid == NULL || p == NULL ){
 		return 0;
 	}
-			puts("We will be returning \n \n");
-	printf("is this %i\n", strcmp( p->pid, uid ) );
-	printf("equal to 0? %i\n", ( strcmp( p->pid, uid ) == 0 ) );
+
 	return ( strcmp( p->pid, uid ) == 0 );
 }
 
@@ -185,7 +184,6 @@ ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDa
 	while( nodeToCheck != NULL ){
 
 		if( (*doesDataMatchUID)( uid, nodeToCheck->data ) ){
-			puts("-------FOUND THE MATCH-------");
 			break;
 		}
 		nodeToCheck = nodeToCheck->next;
@@ -204,7 +202,6 @@ ListNode* findNodeWithData( ListNode* currentHead, void* data ){
 	while( nodeToCheck != NULL ){
 
 		if( nodeToCheck->data == data ){
-			puts("-------FOUND THE MATCH-------");
 			break;
 		}
 		nodeToCheck = nodeToCheck->next;
@@ -250,7 +247,6 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoi
 			
 			// take nextNode out of list
 			nodeToCheck->next = nextNode->next;
-			puts("-------FOUND THE MATCH-------");
 
 
 			// DELETE EVERYTHING RELATED TO NEXTNODE

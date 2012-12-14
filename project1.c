@@ -63,31 +63,79 @@ int main( int argc, char *argv[] ){
 
 void TestLinkedListStuff(){
 
+	const char* PID_1 = "p15359";
+	const char* PID_2 = "p32228";
+	const char* PID_3 = "p34831";
+	const char* PID_4 = "p97223";
+
+	const char* CID_1 = "c135923";
+	const char* CID_2 = "c776622";
+	const char* CID_3 = "c328424";
+	const char* CID_4 = "c988383";
+
+
 	ListNode* patronsHead = NULL;
-
-	addPatron( &patronsHead, "p15369", "Greg M" );
-	printPatronLinkedList( patronsHead );
-	addPatron( &patronsHead, "p34831", "Harry Y" );
-	printPatronLinkedList( patronsHead );
-	addPatron( &patronsHead, "p34831", "Herb I" );
-	printPatronLinkedList( patronsHead );
-	addPatron( &patronsHead, "p97223", "Sarah S" );
-	printPatronLinkedList( patronsHead );
-	deleteAndFreeList( patronsHead, freePatronDataStruct );
-
-
 	ListNode* itemsHead = NULL;
 
-	addItem( &itemsHead, 4, "c135923", "Roth R", "Wonderful Book" );
-	printf("Copies available are %i\n", getCopiesAvailable( itemsHead, "c135923" ) );
-	printItemLinkedList( itemsHead );
-	addItem( &itemsHead, 8, "c328424", "J K", "Once Upon A Time" );
-	printf("Copies available are %i\n", getCopiesAvailable( itemsHead, "c328424" ) );
-	printItemLinkedList( itemsHead );
-	addItem( &itemsHead, 2, "c988383", "Roth R", "Wonderful Book pt 2" );
-	printf("Copies available are %i\n", getCopiesAvailable( itemsHead, "c988383" ) );
-	printItemLinkedList( itemsHead );
+	addPatron( &patronsHead, PID_1, "Greg M" );
+	addPatron( &patronsHead, PID_2, "Harry Y" );
+	addPatron( &patronsHead, PID_3, "Herb I" );
+	addPatron( &patronsHead, PID_4, "Sarah S" );
 
-	printf("The list size is %i\n", getListSize( itemsHead ) );
+	printPatronLinkedList( patronsHead );
+	printf("The Patron's list size is %i\n", getListSize( patronsHead ) );
+
+	addItem( &itemsHead, 4, CID_1, "Roth R", "Wonderful Book" );
+	addItem( &itemsHead, 2, CID_2, "J K", "Once Upon A Time" );
+	addItem( &itemsHead, 8, CID_3, "Roth R", "Wonderful Book pt 2" );
+	addItem( &itemsHead, 3, CID_4, "Kenny Z", "The Cook Book" );
+
+	printItemLinkedList( itemsHead );
+	printf("The Item's list size is %i\n", getListSize( itemsHead ) );
+
+
+	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
+	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
+	printf("The patron %s is about to try to check out %s\n", PID_1, CID_2);
+	printf("The result of borrow function was %i\n", borrowItem( &itemsHead, &patronsHead, PID_1, CID_2 ));
+	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
+	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
+
+
+	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
+	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
+	printf("The patron %s is about to try to check out ANOTHER copy of %s\n", PID_1, CID_2);
+	printf("The result of borrow function was %i\n", borrowItem( &itemsHead, &patronsHead, PID_1, CID_2 ));
+	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
+	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
+
+
+	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
+	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
+	printf("The patron %s is about to try to check out %s\n", PID_2, CID_2);
+	printf("The result of borrow function was %i\n", borrowItem( &itemsHead, &patronsHead, PID_2, CID_2 ));
+	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
+	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
+
+
+	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
+	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
+	printf("The patron %s is about to try to check out AN ITEM THAT SHOULD BE OUT OF STOCK %s\n", PID_3, CID_2);
+	printf("The result of borrow function was %i\n", borrowItem( &itemsHead, &patronsHead, PID_3, CID_2 ));
+	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
+	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
+
+
+
+	deleteAndFreeList( patronsHead, freePatronDataStruct );
 	deleteAndFreeList( itemsHead, freeItemDataStruct );
+
+
+
+	// TEST BORROW ITEM NOW
+	// ADD COMMENTS TO EVERYTHING
+	// REARRANGE ORDERING?
+	// ADD CHECKS FOR CAST FAILURES
+
+
 }

@@ -90,14 +90,14 @@ _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid,
 		return 0;
 	}
 
-	ItemData* item = (ItemData*)itemNode;
+	ItemData* item = (ItemData*)itemNode->data;
 	
 	if( getListSize( item->patronsCurrentlyRenting ) == item->numCopies ){
 		fprintf( stderr, "No more copies of %s are available\n", cid );
 		return 0;
 	}
 
-	PatronData* patron = (PatronData*) patronNode;
+	PatronData* patron = (PatronData*) patronNode->data;
 	if( getListSize( patron->itemsCurrentlyRenting ) == 5 ){
 		fprintf( stderr, "%s cannot check out any more items\n", pid );
 		return 0;
