@@ -63,10 +63,10 @@ int main( int argc, char *argv[] ){
 
 void TestLinkedListStuff(){
 
-	const char* PID_1 = "p15359";
-	const char* PID_2 = "p32228";
-	const char* PID_3 = "p34831";
-	const char* PID_4 = "p97223";
+	const char* PID_1 = "p1535";
+	const char* PID_2 = "p3222";
+	const char* PID_3 = "p3483";
+	const char* PID_4 = "p9722";
 
 	const char* CID_1 = "c135923";
 	const char* CID_2 = "c776622";
@@ -94,12 +94,15 @@ void TestLinkedListStuff(){
 	printf("The Item's list size is %i\n", getListSize( itemsHead ) );
 
 
+	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
 	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
 	printf("The patron %s is about to try to check out %s\n", PID_1, CID_2);
 	printf("The result of borrow function was %i\n", borrowItem( &itemsHead, &patronsHead, PID_1, CID_2 ));
 	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
+
+	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
 
 
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
@@ -117,6 +120,7 @@ void TestLinkedListStuff(){
 	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
 
+	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
 
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
 	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
@@ -125,6 +129,8 @@ void TestLinkedListStuff(){
 	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
 
+
+	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
 
 
 	deleteAndFreeList( patronsHead, freePatronDataStruct );

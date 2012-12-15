@@ -63,7 +63,7 @@ int getCopiesAvailable( ListNode* head, const char* cid ){
 		return 0;
 	}
 
-	ListNode* itemNode = findNodeWithUID( &(*head), cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( head, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;
@@ -113,4 +113,31 @@ _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid,
 	}
 	return 0;
 }
+
+void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char* cid ){
+
+	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
+	
+	if( itemNode == NULL ){
+		fprintf( stderr, "%s does not exist", cid );		
+	}
+
+	ItemData* item = (ItemData*) itemNode->data;
+	ListNode* patronsCurrentlyRenting = item->patronsCurrentlyRenting;
+
+	if( patronsCurrentlyRenting == NULL ){
+		printf( "Item %s (%s/%s) is not checked out", cid, item->author, item->title ); 
+	}
+	else{
+		printf( "Item %s (%s/%s) is checked out to:\n", cid, item->author, item->title );
+
+		while( patronsCurrentlyRenting != NULL ){
+			ListNode* patronNode = (ListNode*)patronsCurrentlyRenting->data;
+			PatronData* p = (PatronData*) patronNode->data;
+			printf( "   %s (%s)\n", p->pid, p->name );
+			patronsCurrentlyRenting = patronsCurrentlyRenting->next;
+		}
+	}
+}
+
 

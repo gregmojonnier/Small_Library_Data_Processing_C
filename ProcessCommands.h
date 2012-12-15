@@ -6,4 +6,6 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name );
 _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* author, const char* title );
 int getCopiesAvailable( ListNode* head, const char* cid );
 _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid, const char* cid );
+
+void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char* cid );
 #endif
