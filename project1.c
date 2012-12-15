@@ -95,6 +95,7 @@ void TestLinkedListStuff(){
 
 
 	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
+	itemsOutByPatron( itemsHead, patronsHead, PID_1 );
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
 	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
 	printf("The patron %s is about to try to check out %s\n", PID_1, CID_2);
@@ -103,6 +104,10 @@ void TestLinkedListStuff(){
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
 
 	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
+
+	itemsOutByPatron( itemsHead, patronsHead, PID_1 );
+	borrowItem( &itemsHead, &patronsHead, PID_1, CID_3 );
+	itemsOutByPatron( itemsHead, patronsHead, PID_1 );
 
 
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");

@@ -8,4 +8,5 @@ int getCopiesAvailable( ListNode* head, const char* cid );
 _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid, const char* cid );
 
 void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char* cid );
+void itemsOutByPatron( ListNode* itemsHead, ListNode* patronsHead, const char* pid );
 #endif
