@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Sep  7 2011) on Sat Dec  8 03:11:11 2012
+# Created by gmakemake (Ubuntu Sep  7 2011) on Sat Dec 15 15:23:01 2012
 #
 
 #
@@ -64,13 +64,13 @@ CLIBFLAGS =	$(LIBFLAGS)
 
 
 CPP_FILES =	
-C_FILES =	LinkedDataNodeOperations.c ProcessCommands.c project1.c
+C_FILES =	ExecuteCommands.c LinkedDataNodeOperations.c SanitizeInput.c project1.c
 PS_FILES =	
 S_FILES =	
-H_FILES =	LinkedDataNodeOperations.h LinkedDataNodeStructures.h ProcessCommands.h
+H_FILES =	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h SanitizeInput.h
 SOURCEFILES =	$(H_FILES) $(CPP_FILES) $(C_FILES) $(S_FILES)
 .PRECIOUS:	$(SOURCEFILES)
-OBJFILES =	LinkedDataNodeOperations.o ProcessCommands.o 
+OBJFILES =	ExecuteCommands.o LinkedDataNodeOperations.o SanitizeInput.o 
 
 #
 # Main targets
@@ -85,9 +85,10 @@ project1:	project1.o $(OBJFILES)
 # Dependencies
 #
 
+ExecuteCommands.o:	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h
 LinkedDataNodeOperations.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h
-ProcessCommands.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h ProcessCommands.h
-project1.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h ProcessCommands.h
+SanitizeInput.o:	SanitizeInput.h
+project1.o:	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h
 
 #
 # Housekeeping
