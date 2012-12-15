@@ -22,7 +22,7 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 	strcpy( p->pid, pid );
 	p->itemsCurrentlyRenting = NULL;
 
-	if( !insertNodeAtHead( &(*head), (void*)p ) ){
+	if( !insertNodeAtHead( head, (void*)p ) ){
 		return 0;
 	}
 	return 1;
@@ -51,7 +51,7 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 	strcpy( i->author, author );
 	strcpy( i->title, title );
 	
-	if( !insertNodeAtHead( &(*head), (void*)i ) ){
+	if( !insertNodeAtHead( head, (void*)i ) ){
 		return 0;
 	}
 	return 1;
@@ -103,12 +103,12 @@ _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid,
 		return 0;
 	}
 
-	if( findNodeWithData( patron->itemsCurrentlyRenting, &(*itemNode) ) != NULL ){
+	if( findNodeWithData( patron->itemsCurrentlyRenting, itemNode ) != NULL ){
 		fprintf( stderr, "%s already has %s checked out\n", pid, cid );
 		return 0;
 	}
 
-	if( insertNodeAtHead( &patron->itemsCurrentlyRenting, &(*itemNode) ) && insertNodeAtHead( &item->patronsCurrentlyRenting, &(*patronNode) ) ){
+	if( insertNodeAtHead( &patron->itemsCurrentlyRenting, itemNode ) && insertNodeAtHead( &item->patronsCurrentlyRenting, patronNode ) ){
 		return 1;
 	}
 	return 0;
@@ -222,7 +222,7 @@ _Bool discardCopiesOfItem( ListNode** itemsHead, short int numToDelete, const ch
 	item->numCopies -= numToDelete;
 
 	if( item->numCopies == 0 ){
-		deleteNode( &(*itemsHead), itemNode, freeItemDataStruct );
+		deleteNode( itemsHead, itemNode, freeItemDataStruct );
 	}
 	return 1;
 }
