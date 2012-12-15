@@ -120,6 +120,7 @@ void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char*
 	
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist", cid );		
+		return ;
 	}
 
 	ItemData* item = (ItemData*) itemNode->data;
@@ -147,6 +148,7 @@ void itemsOutByPatron( ListNode* itemsHead, ListNode* patronsHead, const char* p
 	
 	if( patronNode == NULL ){
 		fprintf( stderr, "%s does not exist", pid );		
+		return;
 	}
 
 	PatronData* patron = (PatronData*) patronNode->data;
@@ -168,3 +170,36 @@ void itemsOutByPatron( ListNode* itemsHead, ListNode* patronsHead, const char* p
 
 }
 
+_Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char* pid, const char* cid ){
+
+	ListNode* patronNode = findNodeWithUID( patronsHead, pid, doesPatronMatchUID );
+	if( patronNode == NULL ){
+		fprintf( stderr, "%s does not exist", pid );
+		return 0;
+	}
+
+	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
+	if( itemNode == NULL ){
+		fprintf( stderr, "%s does not exist", cid );
+		return 0;
+	}
+
+
+
+	PatronData* patron = (PatronData*)patronNode->data;
+	ItemData* item = (ItemData*)itemNode->data;
+
+
+
+	ListNode* itemPtrToDelete = findNodeWithData( patron->itemsCurrentlyRenting, itemNode );
+
+	if( itemPtrToDelete == NULL ){
+		fprintf( stderr, "%s does not have %s checked out", pid, cid );
+		return 0;
+	}
+	else{
+		deleteNode( &patron->itemsCurrentlyRenting, itemPtrToDelete, NULL );
+		deleteNode( &item->patronsCurrentlyRenting, findNodeWithData( item->patronsCurrentlyRenting, patronNode ), NULL );
+	}
+	return 1;
+}

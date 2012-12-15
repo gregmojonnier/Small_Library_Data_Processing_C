@@ -104,6 +104,9 @@ void TestLinkedListStuff(){
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
 
 	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
+	printf("ABOUT TO TRY TO HAVE %s return %s\n", PID_1, CID_2);
+	printf("%i\n", returnPatronsItem( itemsHead, patronsHead, PID_1, CID_2));
+	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
 
 	itemsOutByPatron( itemsHead, patronsHead, PID_1 );
 	borrowItem( &itemsHead, &patronsHead, PID_1, CID_3 );
