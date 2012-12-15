@@ -140,6 +140,18 @@ void TestLinkedListStuff(){
 
 	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
 
+//	addItem( &itemsHead, 3, CID_4, "Kenny Z", "The Cook Book" );
+	printf("ZZZZ -There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_4 ), CID_4 );
+	discardCopiesOfItem( &itemsHead, 4, CID_4 );
+	discardCopiesOfItem( &itemsHead, 2, CID_4 );
+	printf("ZZZZ -There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_4 ), CID_4 );
+	printItemLinkedList( itemsHead );
+	printf("The Item's list size is %i\n", getListSize( itemsHead ) );
+	discardCopiesOfItem( &itemsHead, 1, CID_4 );
+	printItemLinkedList( itemsHead );
+	printf("The Item's list size is %i\n", getListSize( itemsHead ) );
+
+
 
 	deleteAndFreeList( patronsHead, freePatronDataStruct );
 	deleteAndFreeList( itemsHead, freeItemDataStruct );

@@ -203,3 +203,27 @@ _Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char*
 	}
 	return 1;
 }
+
+_Bool discardCopiesOfItem( ListNode** itemsHead, short int numToDelete, const char* cid){
+
+	ListNode* itemNode = findNodeWithUID( *itemsHead, cid, doesItemMatchUID );
+	if( itemNode == NULL ){
+		fprintf( stderr, "%s does not exist", cid );
+		return 0;
+	}
+
+	ItemData* item = (ItemData*)itemNode->data;
+
+	if( ( item->numCopies - getListSize( item->patronsCurrentlyRenting ) ) < numToDelete ){
+		fprintf( stderr, "Too few copies of %s are available", cid );
+		return 0;
+	}
+	
+	item->numCopies -= numToDelete;
+
+	if( item->numCopies == 0 ){
+		deleteNode( &(*itemsHead), itemNode, freeItemDataStruct );
+	}
+	return 1;
+}
+
