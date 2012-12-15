@@ -1,5 +1,12 @@
 #ifndef LINKED_DATA_NODE_STRUCTURES_H
 #define LINKED_DATA_NODE_STRUCTURES_H
+/*
+* This file contains structures that make up
+* the linked list data structure used in this project.
+*
+*
+* @author Greg Mojonnier
+*/
 
 /*
 * Data Structure: ListNode
