@@ -156,10 +156,6 @@ void TestLinkedListStuff(){
 	deleteAndFreeList( patronsHead, freePatronDataStruct );
 	deleteAndFreeList( itemsHead, freeItemDataStruct );
 
-
-
-	// ADD COMMENTS TO EVERYTHING
-	// REARRANGE ORDERING?
 	// ADD CHECKS FOR CAST FAILURES
 
 
