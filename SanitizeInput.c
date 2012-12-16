@@ -21,16 +21,25 @@
 
 void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName ){
 
-	FILE* inputFile = fopen( fileName, "r" );
+	_Bool useStdIn = 0;
+	FILE* inputFile;
 
-	if( inputFile == NULL ){
-		return;
+	if( fileName == NULL ){
+		useStdIn = 1;
+	}
+
+	if( !useStdIn ){
+		inputFile = fopen( fileName, "r" );
+
+		if( inputFile == NULL ){
+			return;
+		}
 	}
 
 	char fullLine[ LINE_MAX_SIZE ];
 
 	// get each line until end of file
-	while( fgets( fullLine, LINE_MAX_SIZE, inputFile ) != NULL ){
+	while( fgets( fullLine, LINE_MAX_SIZE, ( ( useStdIn ) ? stdin : inputFile ) ) != NULL ){
 		printf("The entire string is %s\n", fullLine);
 		// parse first word of line based on word separators
 		char* parsedCommand = strtok( fullLine, DEFAULT_WORD_SEPARATORS );;
