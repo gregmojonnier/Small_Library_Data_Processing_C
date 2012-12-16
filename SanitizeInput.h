@@ -11,4 +11,10 @@
 * @author Greg Mojonnier
 */
 
+#include "LinkedDataNodeStructures.h"
+
+void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName );
+void ProcessPatronCommand( ListNode** patronsHead);
+void ProcessItemCommand( ListNode** itemsHead);
+int GetSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
 #endif

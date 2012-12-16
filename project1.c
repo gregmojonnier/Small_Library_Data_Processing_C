@@ -16,6 +16,7 @@
 #include "ExecuteCommands.h"
 #include "LinkedDataNodeOperations.h"
 #include <allocate.h>
+#include "SanitizeInput.h"
 
 void TestLinkedListStuff();
 
@@ -156,7 +157,29 @@ void TestLinkedListStuff(){
 	deleteAndFreeList( patronsHead, freePatronDataStruct );
 	deleteAndFreeList( itemsHead, freeItemDataStruct );
 
+	ListNode* psHead = NULL;
+	ListNode* isHead = NULL;
+
+	ProcessInput(&isHead, &psHead, "testdata.txt");
+
+	printPatronLinkedList( psHead );
+
+	deleteAndFreeList( psHead, freePatronDataStruct );
+	deleteAndFreeList( isHead, freeItemDataStruct );
+
+
+	puts("\n\n\nTHE ITEMS HERE WE COME\n\n\n");
+	ListNode* psHead1 = NULL;
+	ListNode* isHead1 = NULL;
+	ProcessInput(&isHead1, &psHead1, "itemsdata.txt");
+
+	printItemLinkedList( isHead1 );
+
+	deleteAndFreeList( psHead1, freePatronDataStruct );
+	deleteAndFreeList( isHead1, freeItemDataStruct );
 	// ADD CHECKS FOR CAST FAILURES
+
+
 
 
 }
