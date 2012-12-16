@@ -22,7 +22,7 @@ void TestLinkedListStuff();
 
 
 int main( int argc, char *argv[] ){
-	TestLinkedListStuff();
+	//TestLinkedListStuff();
 
 	// User must supply patron_file and item_file
 	if( argc != 3 ){
@@ -49,15 +49,24 @@ int main( int argc, char *argv[] ){
 		return( EXIT_FAILURE );
 	}
 
-
-
-
-
-
-
-
 	fclose( initialPatronsFile );
 	fclose( initialItemsFile );
+
+
+	ListNode* patronsHead = NULL;
+	ListNode* itemsHead = NULL;
+
+	ProcessInput(&itemsHead, &patronsHead, argv[ 1 ] );
+	ProcessInput(&itemsHead, &patronsHead, argv [ 2 ] );
+
+	//ProcessInput(&itemsHead, &patronsHead, NULL );
+
+	deleteAndFreeList( patronsHead, freePatronDataStruct );
+	deleteAndFreeList( itemsHead, freeItemDataStruct );
+
+
+
+
 
 	return( EXIT_SUCCESS );
 }
