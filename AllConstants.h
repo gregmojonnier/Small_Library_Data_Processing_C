@@ -17,8 +17,8 @@ static const int CID_MIN_SIZE = 4;
 static const int CID_MAX_SIZE = 8;
 static const int AUTHOR_MAX_SIZE = 52;
 static const int TITLE_MAX_SIZE = 52;
-static const int NUM_COPIES_MIN_SIZE = 0;
-static const int NUM_COPIES_MAX_SIZE = 99;
+static const int ITEM_NUMS_MIN_SIZE = 0;
+static const int ITEM_NUMS_MAX_SIZE = 99;
 
 static const char* DEFAULT_WORD_SEPARATORS = " \t\n";
 static const char* QUOTE_WORD_SEPARATOR = "\"";

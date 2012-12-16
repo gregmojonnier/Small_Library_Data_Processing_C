@@ -17,7 +17,12 @@ void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 void ProcessPatronCommand( ListNode** patronsHead );
 void ProcessItemCommand( ListNode** itemsHead );
 void ProcessAvailableCommand( ListNode** itemsHead );
+void ProcessBorrowCommand( ListNode** itemsHead, ListNode** patronsHead );
+void ProcessDiscardCommand( ListNode** itemsHead );
+void ProcessOutCommand( ListNode** itemsHead, ListNode** patronsHead );
+void ProcessReturnCommand( ListNode** itemsHead, ListNode** patronshead );
 _Bool IsValidCID( const char* cid );
 _Bool IsValidPID( const char* pid );
+int GetValidItemsNum( const char* num );
 int GetSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
 #endif

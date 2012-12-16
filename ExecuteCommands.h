@@ -12,7 +12,7 @@
 
 #include "LinkedDataNodeStructures.h"
 
-int getCopiesAvailable( ListNode* head, const char* cid );
+int getCopiesAvailable( ListNode* itemsHead, const char* cid );
 _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid, const char* cid );
 _Bool discardCopiesOfItem( ListNode** itemsHead, short int numToDelete, const char* cid);
 _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* author, const char* title );

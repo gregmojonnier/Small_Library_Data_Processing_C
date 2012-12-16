@@ -22,19 +22,19 @@
 * Finds how many copies of an item with the specified CID
 * are available to be checked out.
 *
-* @head --------------------> List to find item in.
+* @itemsHead ---------------> List to find item in.
 * @cid ---------------------> cid to match node from.
 *
 * @return ------------------> int which is the number of available copies.
 *
 */
-int getCopiesAvailable( ListNode* head, const char* cid ){
+int getCopiesAvailable( ListNode* itemsHead, const char* cid ){
 	
-	if( head == NULL ){
+	if( itemsHead == NULL ){
 		return 0;
 	}
 
-	ListNode* itemNode = findNodeWithUID( head, cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;

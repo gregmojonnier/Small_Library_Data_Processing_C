@@ -44,16 +44,16 @@ void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 				ProcessItemCommand( itemsHead );
 			}
 			else if( strcmp( parsedCommand, "borrow" ) == 0 ){
-
+				ProcessBorrowCommand( itemsHead, patronsHead );
 			}
 			else if( strcmp( parsedCommand, "return" ) == 0 ){
-
+				ProcessReturnCommand( itemsHead, patronsHead );
 			}
 			else if( strcmp( parsedCommand, "discard" ) == 0 ){
-
+				ProcessDiscardCommand( itemsHead );
 			}
 			else if( strcmp( parsedCommand, "out" ) == 0 ){
-
+				ProcessOutCommand( itemsHead, patronsHead );
 			}
 			else if( strcmp( parsedCommand, "available" ) == 0 ){
 				ProcessAvailableCommand( itemsHead );
@@ -130,11 +130,11 @@ void ProcessItemCommand( ListNode** itemsHead ){
 		switch( tokensProcessed ){
 			case 0:
 			  {
-				numCopies = strtoul( token, NULL, 10 );
-				if( numCopies < NUM_COPIES_MIN_SIZE || numCopies > NUM_COPIES_MAX_SIZE ){
-					// SOME TYPE OF ERROR?
+				numCopies = GetValidItemsNum( token );
+				if( numCopies < 0 ){
 					return;
 				}
+
 				token = strtok( 0, DEFAULT_WORD_SEPARATORS  );
 				break;
 			  }
@@ -204,11 +204,67 @@ void ProcessItemCommand( ListNode** itemsHead ){
 
 void ProcessAvailableCommand( ListNode** itemsHead ){
 
-	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
+	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+	
+	if( cid != NULL && IsValidCID( cid ) ){
+		getCopiesAvailable( *itemsHead, cid );
+	}
+}
 
+void ProcessBorrowCommand( ListNode** itemsHead, ListNode** patronsHead ){
+	
+	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+	if( pid != NULL && cid != NULL && IsValidPID( pid ) && IsValidCID( cid ) ){
+		borrowItem( itemsHead, patronsHead, pid, cid );	
+	}
+}
+
+// discard n cid
+void ProcessDiscardCommand( ListNode** itemsHead ){
+
+	const char* numToDiscard = strtok( 0, DEFAULT_WORD_SEPARATORS );
+	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+	if( numToDiscard != NULL && cid != NULL ){
+		short int nToDiscard = GetValidItemsNum( numToDiscard );
+
+		if( nToDiscard >= 0 && IsValidCID( cid ) ){
+			discardCopiesOfItem( itemsHead, nToDiscard, cid );
+		}
+	}
+}
+
+void ProcessOutCommand( ListNode** itemsHead, ListNode** patronsHead ){
+
+	const char* uid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+	if( uid != NULL ){
+		if( IsValidCID( uid ) ){
+			patronsWithItemOut( *itemsHead, *patronsHead, uid );
+		}
+		else if( IsValidPID( uid ) ){
+			itemsOutByPatron( *itemsHead, *patronsHead, uid );
+		}
+	}
+}
+
+void ProcessReturnCommand( ListNode** itemsHead, ListNode** patronsHead ){
+
+	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+	if( pid != NULL && cid != NULL && IsValidPID( pid ) && IsValidCID ){
+		returnPatronsItem( *itemsHead, *patronsHead, pid, cid );
+	}
 }
 
 _Bool IsValidCID( const char* cid ){
+
+	if( cid == NULL ){
+		return 0;
+	}
 
 	if( strlen( cid ) < CID_MIN_SIZE-1 || strlen( cid ) > CID_MAX_SIZE-1 ){
 		return 0;
@@ -251,6 +307,10 @@ _Bool IsValidCID( const char* cid ){
 
 _Bool IsValidPID( const char* pid ){
 
+	if( pid == NULL ){
+		return 0;
+	}
+
 	if( isupper( pid[ 0 ] ) ){
 		for( size_t i = 1; i < PID_MAX_SIZE - 1; ++i ){
 			if( !isdigit( pid[ i ] ) ){
@@ -263,7 +323,23 @@ _Bool IsValidPID( const char* pid ){
 	return 0;
 }
 
+int GetValidItemsNum( const char* num ){
+	if( num == NULL ){
+		return -1;
+	}
+
+	long int number = 0;
+	number = strtoul( num, NULL, 10 );
+	if( number < ITEM_NUMS_MIN_SIZE || number > ITEM_NUMS_MAX_SIZE ){
+		return -1;
+	}
+	return number;
+}
+
 int GetSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString ){
+	if( token == NULL ){
+		return 0;
+	}
 
 	int lastCharIndex = maxCharsInString - 2;
 
