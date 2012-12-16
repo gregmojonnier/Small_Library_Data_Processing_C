@@ -196,13 +196,12 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 *
 *
 * @itemsHead ---------------> List of items.
-* @patronsHead -------------> List of patrons.
 * @cid ---------------------> cid who we want to know which patrons have out.
 *
 * @return ------------------> none.
 *
 */
-void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char* cid ){
+void patronsWithItemOut( ListNode* itemsHead, const char* cid ){
 
 	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
 	
@@ -212,21 +211,8 @@ void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char*
 	}
 
 	ItemData* item = (ItemData*) itemNode->data;
-	ListNode* patronsCurrentlyRenting = item->patronsCurrentlyRenting;
 
-	if( patronsCurrentlyRenting == NULL ){
-		printf( "Item %s (%s/%s) is not checked out\n", cid, item->author, item->title ); 
-	}
-	else{
-		printf( "Item %s (%s/%s) is checked out to:\n", cid, item->author, item->title );
-
-		while( patronsCurrentlyRenting != NULL ){
-			ListNode* patronNode = (ListNode*)patronsCurrentlyRenting->data;
-			PatronData* p = (PatronData*) patronNode->data;
-			printf( "   %s (%s)\n", p->pid, p->name );
-			patronsCurrentlyRenting = patronsCurrentlyRenting->next;
-		}
-	}
+	printItemStatus( item );
 }
 
 /*
@@ -237,14 +223,13 @@ void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char*
 * out by the patron specified by pid.
 *
 *
-* @itemsHead ---------------> List of items.
 * @patronsHead -------------> List of patrons.
 * @pid ---------------------> pid who we want to know which items has checked out.
 *
 * @return ------------------> none.
 *
 */
-void itemsOutByPatron( ListNode* itemsHead, ListNode* patronsHead, const char* pid ){
+void itemsOutByPatron( ListNode* patronsHead, const char* pid ){
 
 	ListNode* patronNode = findNodeWithUID( patronsHead, pid, doesPatronMatchUID );
 	
@@ -254,21 +239,9 @@ void itemsOutByPatron( ListNode* itemsHead, ListNode* patronsHead, const char* p
 	}
 
 	PatronData* patron = (PatronData*) patronNode->data;
-	ListNode* itemsCurrentlyRenting = patron->itemsCurrentlyRenting;
 
-	if( itemsCurrentlyRenting == NULL ){
-		printf( "Patron %s (%s) has no items checked out\n", pid, patron->name ); 
-	}
-	else{
-		printf( "Patron %s (%s) has these items checked out:\n", pid, patron->name );
 
-		while( itemsCurrentlyRenting != NULL ){
-			ListNode* itemNode = (ListNode*)itemsCurrentlyRenting->data;
-			ItemData* i = (ItemData*) itemNode->data;
-			printf( "   %s (%s/%s)\n", i->cid, i->author, i->title );
-			itemsCurrentlyRenting = itemsCurrentlyRenting->next;
-		}
-	}
+	printPatronStatus( patron );
 
 }
 
@@ -358,4 +331,73 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 		return 0;
 	}
 	return 1;
+}
+
+void printAllItemsStatus( ListNode* itemsHead ){
+
+	ListNode* itemToPrint = itemsHead;
+
+	while( itemToPrint != NULL ){
+		void* _itemData = itemToPrint->data;
+		ItemData* itemData = (ItemData*) _itemData;
+		printItemStatus( itemData );
+		itemToPrint = itemToPrint->next;
+		printf("\n");
+	}
+}
+
+void printAllPatronsStatus( ListNode* patronsHead ){
+
+	ListNode* patronToPrint = patronsHead;
+
+	while( patronToPrint != NULL ){
+		void* _patronData = patronToPrint->data;
+		PatronData* patronData = (PatronData*) _patronData;
+		printPatronStatus( patronData );
+		patronToPrint = patronToPrint->next;
+		if( patronToPrint != NULL ){
+			printf("\n");
+		}
+	}
+}
+
+void printItemStatus( ItemData* item ){
+	if( item == NULL ){
+		return;
+	}
+
+	ListNode* patronsCurrentlyRenting = item->patronsCurrentlyRenting;
+
+	if( patronsCurrentlyRenting == NULL ){
+		printf( "Item %s (%s/%s) is not checked out\n", item->cid, item->author, item->title ); 
+	}
+	else{
+		printf( "Item %s (%s/%s) is checked out to:\n", item->cid, item->author, item->title );
+
+		while( patronsCurrentlyRenting != NULL ){
+			ListNode* patronNode = (ListNode*)patronsCurrentlyRenting->data;
+			PatronData* p = (PatronData*) patronNode->data;
+			printf( "   %s (%s)\n", p->pid, p->name );
+			patronsCurrentlyRenting = patronsCurrentlyRenting->next;
+		}
+	}
+}
+
+void printPatronStatus( PatronData* patron ){
+
+	ListNode* itemsCurrentlyRenting = patron->itemsCurrentlyRenting;
+
+	if( itemsCurrentlyRenting == NULL ){
+		printf( "Patron %s (%s) has no items checked out\n", patron->pid, patron->name ); 
+	}
+	else{
+		printf( "Patron %s (%s) has these items checked out:\n", patron->pid, patron->name );
+
+		while( itemsCurrentlyRenting != NULL ){
+			ListNode* itemNode = (ListNode*)itemsCurrentlyRenting->data;
+			ItemData* i = (ItemData*) itemNode->data;
+			printf( "   %s (%s/%s)\n", i->cid, i->author, i->title );
+			itemsCurrentlyRenting = itemsCurrentlyRenting->next;
+		}
+	}
 }

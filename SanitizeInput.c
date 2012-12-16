@@ -69,7 +69,15 @@ void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 			}
 		}
 	}
-	fclose( inputFile );
+	if( !useStdIn ){
+		fclose( inputFile );
+	}
+	else{
+		// if using stdin then we need to print finising statuses of everything
+		printf("\n");
+		printAllItemsStatus( *itemsHead );
+		printAllPatronsStatus( *patronsHead );
+	}
 }
 
 void ProcessPatronCommand( ListNode** patronsHead ){
@@ -251,10 +259,10 @@ void ProcessOutCommand( ListNode** itemsHead, ListNode** patronsHead ){
 
 	if( uid != NULL ){
 		if( IsValidCID( uid ) ){
-			patronsWithItemOut( *itemsHead, *patronsHead, uid );
+			patronsWithItemOut( *itemsHead, uid );
 		}
 		else if( IsValidPID( uid ) ){
-			itemsOutByPatron( *itemsHead, *patronsHead, uid );
+			itemsOutByPatron( *patronsHead, uid );
 		}
 	}
 }

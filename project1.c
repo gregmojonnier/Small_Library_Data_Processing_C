@@ -23,7 +23,6 @@ void TestLinkedListStuff();
 
 int main( int argc, char *argv[] ){
 	//TestLinkedListStuff();
-
 	// User must supply patron_file and item_file
 	if( argc != 3 ){
 		// verify is tab required before output?
@@ -59,7 +58,7 @@ int main( int argc, char *argv[] ){
 	ProcessInput(&itemsHead, &patronsHead, argv[ 1 ] );
 	ProcessInput(&itemsHead, &patronsHead, argv [ 2 ] );
 
-	//ProcessInput(&itemsHead, &patronsHead, NULL );
+	ProcessInput(&itemsHead, &patronsHead, NULL );
 
 	deleteAndFreeList( patronsHead, freePatronDataStruct );
 	deleteAndFreeList( itemsHead, freeItemDataStruct );
@@ -104,8 +103,8 @@ void TestLinkedListStuff(){
 	printf("The Item's list size is %i\n", getListSize( itemsHead ) );
 
 
-	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
-	itemsOutByPatron( itemsHead, patronsHead, PID_1 );
+	patronsWithItemOut( itemsHead, CID_2 );
+	itemsOutByPatron( patronsHead, PID_1 );
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
 	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
 	printf("The patron %s is about to try to check out %s\n", PID_1, CID_2);
@@ -113,14 +112,14 @@ void TestLinkedListStuff(){
 	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
 
-	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
+	patronsWithItemOut( itemsHead, CID_2 );
 	printf("ABOUT TO TRY TO HAVE %s return %s\n", PID_1, CID_2);
 	printf("%i\n", returnPatronsItem( itemsHead, patronsHead, PID_1, CID_2));
-	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
+	patronsWithItemOut( itemsHead, CID_2 );
 
-	itemsOutByPatron( itemsHead, patronsHead, PID_1 );
+	itemsOutByPatron( patronsHead, PID_1 );
 	borrowItem( &itemsHead, &patronsHead, PID_1, CID_3 );
-	itemsOutByPatron( itemsHead, patronsHead, PID_1 );
+	itemsOutByPatron( patronsHead, PID_1 );
 
 
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
@@ -138,7 +137,7 @@ void TestLinkedListStuff(){
 	printf("There are now %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2);
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
 
-	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
+	patronsWithItemOut( itemsHead, CID_2 );
 
 	printf("\n\n\n+++++++++++++++++++++++++++++++++++++++\n");
 	printf("There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_2 ), CID_2 );
@@ -148,7 +147,7 @@ void TestLinkedListStuff(){
 	printf("+++++++++++++++++++++++++++++++++++++++\n\n");
 
 
-	patronsWithItemOut( itemsHead, patronsHead, CID_2 );
+	patronsWithItemOut( itemsHead, CID_2 );
 
 //	addItem( &itemsHead, 3, CID_4, "Kenny Z", "The Cook Book" );
 	printf("ZZZZ -There are currently %i copies available of %s\n", getCopiesAvailable( itemsHead, CID_4 ), CID_4 );

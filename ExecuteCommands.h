@@ -16,8 +16,12 @@ int getCopiesAvailable( ListNode* itemsHead, const char* cid );
 _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid, const char* cid );
 _Bool discardCopiesOfItem( ListNode** itemsHead, short int numToDelete, const char* cid);
 _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* author, const char* title );
-void patronsWithItemOut( ListNode* itemsHead, ListNode* patronsHead, const char* cid );
-void itemsOutByPatron( ListNode* itemsHead, ListNode* patronsHead, const char* pid );
+void patronsWithItemOut( ListNode* itemsHead, const char* cid );
+void itemsOutByPatron( ListNode* patronsHead, const char* pid );
 _Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char* pid, const char* cid );
 _Bool addPatron( ListNode** head, const char* pid, const char* name );
+void printAllItemsStatus( ListNode* itemsHead );
+void printAllPatronsStatus( ListNode* patronsHead );
+void printItemStatus( ItemData* item );
+void printPatronStatus( PatronData* patron );
 #endif

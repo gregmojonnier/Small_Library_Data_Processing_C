@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Sep  7 2011) on Sat Dec 15 15:23:01 2012
+# Created by gmakemake (Ubuntu Sep  7 2011) on Sun Dec 16 15:46:08 2012
 #
 
 #
@@ -67,7 +67,7 @@ CPP_FILES =
 C_FILES =	ExecuteCommands.c LinkedDataNodeOperations.c SanitizeInput.c project1.c
 PS_FILES =	
 S_FILES =	
-H_FILES =	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h SanitizeInput.h
+H_FILES =	AllConstants.h ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h SanitizeInput.h
 SOURCEFILES =	$(H_FILES) $(CPP_FILES) $(C_FILES) $(S_FILES)
 .PRECIOUS:	$(SOURCEFILES)
 OBJFILES =	ExecuteCommands.o LinkedDataNodeOperations.o SanitizeInput.o 
@@ -87,8 +87,8 @@ project1:	project1.o $(OBJFILES)
 
 ExecuteCommands.o:	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h
 LinkedDataNodeOperations.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h
-SanitizeInput.o:	SanitizeInput.h
-project1.o:	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h
+SanitizeInput.o:	AllConstants.h ExecuteCommands.h LinkedDataNodeStructures.h SanitizeInput.h
+project1.o:	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h SanitizeInput.h
 
 #
 # Housekeeping
