@@ -14,7 +14,10 @@
 #include "LinkedDataNodeStructures.h"
 
 void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName );
-void ProcessPatronCommand( ListNode** patronsHead);
-void ProcessItemCommand( ListNode** itemsHead);
+void ProcessPatronCommand( ListNode** patronsHead );
+void ProcessItemCommand( ListNode** itemsHead );
+void ProcessAvailableCommand( ListNode** itemsHead );
+_Bool IsValidCID( const char* cid );
+_Bool IsValidPID( const char* pid );
 int GetSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
 #endif

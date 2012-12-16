@@ -56,7 +56,7 @@ void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 
 			}
 			else if( strcmp( parsedCommand, "available" ) == 0 ){
-
+				ProcessAvailableCommand( itemsHead );
 			}
 		}
 	}
@@ -74,14 +74,7 @@ void ProcessPatronCommand( ListNode** patronsHead ){
 		switch( tokensProcessed ){
 			case 0:
 			  {
-				if( isupper( token[ 0 ] ) ){
-					for( size_t i = 1; i < PID_MAX_SIZE - 1; ++i ){
-						if( !isdigit( token[ i ] ) ){
-							// ERROR? must be all digits after uppercase letter
-							return;
-						}
-					}
-
+				if( IsValidPID( token ) ){
 					pid = (char*) allocate( PID_MAX_SIZE * sizeof(char) );
 					strncpy( pid, token, PID_MAX_SIZE - 1 );
 					pid[ PID_MAX_SIZE - 1 ] = '\0';
@@ -148,49 +141,15 @@ void ProcessItemCommand( ListNode** itemsHead ){
 			case 1:
 			  {
 				// CID
-				unsigned short int cidLength = strlen( token );
-				
-				if( cidLength < CID_MIN_SIZE-1 || cidLength > CID_MAX_SIZE-1 ){
+				if( IsValidCID( token ) ){
+					cid = (char*) allocate( strlen( token )+1 * sizeof(char) );
+					strncpy( cid, token, strlen( token ) );
+					cid[ strlen( token ) ] = '\0';
+
+				}
+				else{
 					return;
 				}
-				
-				const char* periodLocationIterator = strchr( token, PERIOD_WORD_SEPARATOR );
-				if( periodLocationIterator == NULL ){
-					// Error needs period?
-					return;
-				}
-
-			
-				const char* start = token;
-
-				while( start != periodLocationIterator ){
-					char ch = *start;
-					printf("the char is %s\n", &ch );
-					if( !isdigit( ch ) ){	
-						printf("1.NOT  digit%sQQ\n", start);
-						// not digits before error?
-						return;
-					}
-					++start;
-				}
-
-				const char* middle = periodLocationIterator;
-
-				while( middle != &token[ strlen( token ) ]  ){
-					char ch = *middle;
-					printf("the char is %s\n", &ch );
-					if( !isdigit( ch ) && ch != '.' ){	
-						printf("1.NOT  digit %s\n", middle);
-						// not digits before error?
-						return;
-					}
-					++middle;
-				}
-
-				cid = (char*) allocate( cidLength+1 * sizeof(char) );
-				strncpy( cid, token, cidLength );
-				cid[ cidLength ] = '\0';
-
 				token = strtok( 0, QUOTE_WORD_SEPARATOR ); 
 				break;
 			  }
@@ -241,6 +200,67 @@ void ProcessItemCommand( ListNode** itemsHead ){
 		case 2:
 			unallocate( cid );
 	}
+}
+
+void ProcessAvailableCommand( ListNode** itemsHead ){
+
+	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+}
+
+_Bool IsValidCID( const char* cid ){
+
+	if( strlen( cid ) < CID_MIN_SIZE-1 || strlen( cid ) > CID_MAX_SIZE-1 ){
+		return 0;
+	}
+
+	const char* periodLocationIterator = strchr( cid, PERIOD_WORD_SEPARATOR );
+	if( periodLocationIterator == NULL ){
+		// Error needs period?
+		return 0;
+	}
+
+
+	const char* start = cid;
+
+	while( start != periodLocationIterator ){
+		char ch = *start;
+		printf("the char is %s\n", &ch );
+		if( !isdigit( ch ) ){	
+			printf("1.NOT  digit%sQQ\n", start);
+			// not digits before error?
+			return 0;
+		}
+		++start;
+	}
+
+	const char* middle = periodLocationIterator;
+
+	while( middle != &cid[ strlen( cid ) ]  ){
+		char ch = *middle;
+		printf("the char is %s\n", &ch );
+		if( !isdigit( ch ) && ch != '.' ){	
+			printf("1.NOT  digit %s\n", middle);
+			// not digits before error?
+			return 0;
+		}
+		++middle;
+	}
+	return 1;
+}
+
+_Bool IsValidPID( const char* pid ){
+
+	if( isupper( pid[ 0 ] ) ){
+		for( size_t i = 1; i < PID_MAX_SIZE - 1; ++i ){
+			if( !isdigit( pid[ i ] ) ){
+				// ERROR? must be all digits after uppercase letter
+				return 0;
+			}
+		}
+		return 1;
+	}
+	return 0;
 }
 
 int GetSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString ){
