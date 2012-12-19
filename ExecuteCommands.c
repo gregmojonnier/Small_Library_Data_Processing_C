@@ -42,10 +42,10 @@ int getCopiesAvailable( ListNode* itemsHead, const char* cid ){
 	
 	ItemData* item = (ItemData*)itemNode->data;
 	ListNode* patronsRenting = item->patronsCurrentlyRenting;
-	int copiesCheckedOut = getListSize( patronsRenting );
+	int copiesAvailable = item->numCopies - getListSize( patronsRenting );
 
-	printf("Item %s (%s/%s) %i of %i copies available\n", cid, item->author, item->title, copiesCheckedOut, item->numCopies );
-	return (item->numCopies - copiesCheckedOut);
+	printf("Item %s (%s/%s): %i of %i copies available\n", cid, item->author, item->title, copiesAvailable, item->numCopies );
+	return copiesAvailable;
 }
 
 /*
@@ -96,7 +96,7 @@ _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid,
 		return 0;
 	}
 
-	if( insertNodeAtHead( &patron->itemsCurrentlyRenting, itemNode ) && insertNodeAtHead( &item->patronsCurrentlyRenting, patronNode ) ){
+	if( insertNodeInOrder( &patron->itemsCurrentlyRenting, itemNode, newItemHasLowerPrecedence ) && insertNodeInOrder( &item->patronsCurrentlyRenting, patronNode, newPatronHasLowerPrecedence ) ){
 		return 1;
 	}
 	return 0;
@@ -123,7 +123,7 @@ _Bool discardCopiesOfItem( ListNode** itemsHead, short int numToDelete, const ch
 
 	ListNode* itemNode = findNodeWithUID( *itemsHead, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
-		fprintf( stderr, "%s does not exist", cid );
+		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;
 	}
 
@@ -165,7 +165,7 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 
 	ListNode* existingItemNode;
 	if( ( existingItemNode = findNodeWithUID( *head, cid, doesItemMatchUID ) ) != NULL ){
-		ItemData* existingItem = (ItemData*)existingItemNode;
+		ItemData* existingItem = (ItemData*)existingItemNode->data;
 		fprintf( stderr, "Item %s (%s/%s) already associated with (%s/%s)\n", cid, author, title, existingItem->author, existingItem->title ); 
 		return 0;
 	}
@@ -181,7 +181,7 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 	strcpy( i->author, author );
 	strcpy( i->title, title );
 	
-	if( !insertNodeAtHead( head, (void*)i ) ){
+	if( !insertNodeInOrder( head, (void*)i, newItemHasLowerPrecedence ) ){
 		return 0;
 	}
 	return 1;
@@ -206,7 +206,7 @@ void patronsWithItemOut( ListNode* itemsHead, const char* cid ){
 	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
 	
 	if( itemNode == NULL ){
-		fprintf( stderr, "%s does not exist", cid );		
+		fprintf( stderr, "%s does not exist\n", cid );		
 		return ;
 	}
 
@@ -234,7 +234,7 @@ void itemsOutByPatron( ListNode* patronsHead, const char* pid ){
 	ListNode* patronNode = findNodeWithUID( patronsHead, pid, doesPatronMatchUID );
 	
 	if( patronNode == NULL ){
-		fprintf( stderr, "%s does not exist", pid );		
+		fprintf( stderr, "%s does not exist\n", pid );		
 		return;
 	}
 
@@ -266,13 +266,13 @@ _Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char*
 
 	ListNode* patronNode = findNodeWithUID( patronsHead, pid, doesPatronMatchUID );
 	if( patronNode == NULL ){
-		fprintf( stderr, "%s does not exist", pid );
+		fprintf( stderr, "%s does not exist\n", pid );
 		return 0;
 	}
 
 	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
-		fprintf( stderr, "%s does not exist", cid );
+		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;
 	}
 
@@ -317,7 +317,7 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 
 	ListNode* existingPatron;
 	if( ( existingPatron = findNodeWithUID( *head, pid, doesPatronMatchUID ) ) != NULL ){
-		fprintf( stderr, "Patron %s %s already associated with %s\n", pid, name, ((PatronData*)existingPatron->data)->name );
+		fprintf( stderr, "Patron %s (%s) already associated with (%s)\n", pid, name, ((PatronData*)existingPatron->data)->name );
 		return 0;
 	}
 
@@ -327,7 +327,7 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 	strcpy( p->pid, pid );
 	p->itemsCurrentlyRenting = NULL;
 
-	if( !insertNodeAtHead( head, (void*)p ) ){
+	if( !insertNodeInOrder( head, (void*)p, newPatronHasLowerPrecedence ) ){
 		return 0;
 	}
 	return 1;

@@ -13,19 +13,22 @@
 #include <string.h>
 
 /*
-* insertNodeAtHead
+* insertNodeInOrder
 * ----------------------------------
 *  
 * Allocates a new ListNode, sets new nodes dats to data argument,
-* inserts node at head of list argument.
+* inserts node into the list in order. Order is determined by the
+* function passed in newDataHasLowerPrecedence. Data with lower precedence
+* goes lower in the list. Items and Patrons have different criteria for ordering.
 *
-* @currentHead -------------> List to insert node into.
-* @data --------------------> Data thats put into node thats inserted into list.
+* @currentHead ---------------> List to insert node into.
+* @data ----------------------> Data thats put into node thats inserted into list.
+* @newDataHasLowerPrecedence -> Function pointer to determine data precedence.
 *
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool insertNodeAtHead( ListNode** currentHead, void* data ){
+_Bool insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLowerPrecedence)(void* _newData, void* _currentData) ){
 
 	// The address of the outside variable is NULL???
 	// error!
@@ -40,12 +43,147 @@ _Bool insertNodeAtHead( ListNode** currentHead, void* data ){
 	}
 	newNode->data = data;
 
-	// if where the outside pointer
-	// would go if it were dereferenced is null
-	( *currentHead == NULL ) ? ( newNode->next = NULL ) : (newNode->next = *currentHead);
 
-	*currentHead = newNode; 
+	// empty list
+	if( *currentHead == NULL ){
+		newNode->next = NULL;
+		*currentHead = newNode; 
+	}
+	else{
+		ListNode* nodeToCheck = *currentHead;
+	
+
+		if( !newDataHasLowerPrecedence( data, nodeToCheck->data ) ){
+
+			newNode->next = *currentHead;
+			*currentHead = newNode; 
+			return 1;
+		}
+
+		while( nodeToCheck != NULL ){
+			ListNode* nextNodeToCheck = nodeToCheck->next;
+
+			if( nextNodeToCheck != NULL ){
+				if( newDataHasLowerPrecedence( data, nextNodeToCheck->data ) ){
+					nodeToCheck = nextNodeToCheck;
+					continue;
+				}
+				else{
+					nodeToCheck->next = newNode;
+					newNode->next = nextNodeToCheck;
+					break;
+				}
+			}
+			else{
+				nodeToCheck->next = newNode;
+				newNode->next = NULL;
+				break;
+			}
+		}
+	}
+
 	return 1;
+}
+
+/*
+* newPatronHasLowerPrecedence
+* ----------------------------------
+*  
+* Determines if _newPatron has lower precedence
+* than _currentPatron. First compares their name
+* if that is equal than their pid is used.
+*
+* @_newPatron -------------> New patron to check for lower precedence with.
+* @_currentPatron ---------> Current patron to check against.
+*
+* @return ------------------> _Bool indicating success or failure.
+*
+*/
+_Bool newPatronHasLowerPrecedence( void* _newPatron, void* _currentPatron ){
+	PatronData* newPatron = (PatronData*)_newPatron;
+	PatronData* currentPatron = (PatronData*)_currentPatron;
+
+	if( newPatron != NULL && currentPatron != NULL){
+		int namePrecedence = strcmp( newPatron->name, currentPatron->name );
+
+
+		if( namePrecedence == 0 ){
+			// do by PID
+			int pidPrecedence = strcmp( newPatron->pid, currentPatron->pid );
+			
+			if( pidPrecedence > 0 ){
+				return 1;
+			}
+			else{
+				return 0;
+			}
+		}
+		else if( namePrecedence > 0 ){
+			return 1;
+		}
+		else{
+			//namePrecedence < 0
+			return 0;
+		}
+	}
+	else{
+		return 0;
+	}
+}
+
+/*
+* newItemHasLowerPrecedence
+* ----------------------------------
+*  
+* Determines if _newItem has lower precedence than _currentItem.
+* First compares author, if they are the same it than tries
+* title. If titles are the same it uses CID.
+*
+* @_newItem ----------------> New item to check for lower precedence with.
+* @_currentItem ------------> Current item to check against.
+*
+* @return ------------------> _Bool indicating success or failure.
+*
+*/
+_Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem ){
+	ItemData* newItem = (ItemData*)_newItem;
+	ItemData* currentItem = (ItemData*)_currentItem;
+
+	if( newItem != NULL && currentItem != NULL ){
+		int authorPrecedence = strcmp( newItem->author, currentItem->author );
+
+		if( authorPrecedence == 0 ){
+			// item title
+			int titlePrecedence = strcmp( newItem->title, currentItem->title );
+			
+			if( titlePrecedence == 0 ){
+				// cid
+				int cidPrecedence = strcmp( newItem->cid, currentItem->cid );
+				
+				if( cidPrecedence > 0 ){
+					return 1;
+				}
+				else{
+					return 0;
+				}
+			}
+			else if( titlePrecedence > 0 ){
+				return 1;
+			}
+			else{
+				return 0;
+			}
+		}
+		else if( authorPrecedence > 0 ){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
+	else{
+		return 0;
+	}
 }
 
 /*
@@ -384,53 +522,3 @@ int getListSize( ListNode* head ){
 	return size;
 }
 
-/*
-* printItemLinkedList
-* ----------------------------------
-*  
-* Prints a linked list interpreting them as Items.
-*
-* @currentHead -------------> List to print.
-
-* @return ------------------> none.
-*
-*/
-void printItemLinkedList( ListNode* headNode ){
-
-	puts("--------------------------");
-	ListNode* itemToPrint = headNode;
-
-	while( itemToPrint != NULL ){
-		void* _itemData = itemToPrint->data;
-		ItemData* itemData = (ItemData*) _itemData;
-		printf("Item: %s\n", itemData->title);
-		itemToPrint = itemToPrint->next;
-	}
-	puts("--------------------------");
-}
-
-
-/*
-* printPatronLinkedList
-* ----------------------------------
-*  
-* Prints a linked list interpreting them as Patrons.
-*
-* @currentHead -------------> List to print.
-
-* @return ------------------> none.
-*
-*/
-void printPatronLinkedList( ListNode* headNode ){
-
-	puts("--------------------------");
-	ListNode* patronToPrint = headNode;
-
-	while( patronToPrint != NULL ){
-		void* _patronData = patronToPrint->data;
-		PatronData* patronData = (PatronData*) _patronData;
-		printf("Patron: %s\n", patronData->name);
-		patronToPrint = patronToPrint->next;
-	}
-	puts("--------------------------");
-}

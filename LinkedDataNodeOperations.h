@@ -13,7 +13,12 @@
 
 
 // Function to create and insert a ListNode into specified list
-_Bool insertNodeAtHead( ListNode** currentHead, void* data );
+_Bool insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLowerPrecedence)(void* _newData, void* _currentData) );
+
+// These are passed into insertNodeInOrder, they determine
+// if the new Patron/Item has a lower precedence than current
+_Bool newPatronHasLowerPrecedence( void* _newPatron, void* _currentPatron );
+_Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem );
 
 // Functions to delete nodes from list of ListNodes
 _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) );
@@ -39,7 +44,5 @@ ListNode* findNodeWithData( ListNode* currentHead, void* data );
 
 // General utility LL functions
 int getListSize( ListNode* head );
-void printItemLinkedList( ListNode* headNode );
-void printPatronLinkedList( ListNode* headNode );
 
 #endif

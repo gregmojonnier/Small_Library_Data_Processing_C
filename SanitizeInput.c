@@ -40,7 +40,6 @@ void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 
 	// get each line until end of file
 	while( fgets( fullLine, LINE_MAX_SIZE, ( ( useStdIn ) ? stdin : inputFile ) ) != NULL ){
-		//printf("The entire string is %s\n", fullLine);
 		// parse first word of line based on word separators
 		char* parsedCommand = strtok( fullLine, DEFAULT_WORD_SEPARATORS );;
 
@@ -141,8 +140,6 @@ void ProcessItemCommand( ListNode** itemsHead ){
 	int tokensProcessed = 0;
 
 	for( ; tokensProcessed < 6 && token != NULL; tokensProcessed++ ){
-		//printf("current token is %i\n", tokensProcessed );
-		//printf("current token is %s\n", token );
 	
 		switch( tokensProcessed ){
 			case 0:
@@ -298,9 +295,7 @@ _Bool IsValidCID( const char* cid ){
 
 	while( start != periodLocationIterator ){
 		char ch = *start;
-		//printf("the char is %s\n", &ch );
 		if( !isdigit( ch ) ){	
-			//printf("1.NOT  digit%sQQ\n", start);
 			// not digits before error?
 			return 0;
 		}
@@ -311,9 +306,7 @@ _Bool IsValidCID( const char* cid ){
 
 	while( middle != &cid[ strlen( cid ) ]  ){
 		char ch = *middle;
-		//printf("the char is %s\n", &ch );
 		if( !isdigit( ch ) && ch != '.' ){	
-			//printf("1.NOT  digit %s\n", middle);
 			// not digits before error?
 			return 0;
 		}
