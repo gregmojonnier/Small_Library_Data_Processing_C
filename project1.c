@@ -18,7 +18,6 @@
 #include <allocate.h>
 #include "SanitizeInput.h"
 
-// testing out git connection from DSL lab
 int main( int argc, char *argv[] ){
 
 	// User must supply patron_file and item_file
@@ -53,10 +52,10 @@ int main( int argc, char *argv[] ){
 	ListNode* patronsHead = NULL;
 	ListNode* itemsHead = NULL;
 
-	ProcessInput(&itemsHead, &patronsHead, argv[ 1 ] );
-	ProcessInput(&itemsHead, &patronsHead, argv [ 2 ] );
+	processInput(&itemsHead, &patronsHead, argv[ 1 ] );
+	processInput(&itemsHead, &patronsHead, argv [ 2 ] );
 
-	ProcessInput(&itemsHead, &patronsHead, NULL );
+	processInput(&itemsHead, &patronsHead, NULL );
 
 	deleteAndFreeList( patronsHead, freePatronDataStruct );
 	deleteAndFreeList( itemsHead, freeItemDataStruct );

@@ -13,16 +13,22 @@
 
 #include "LinkedDataNodeStructures.h"
 
-void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName );
-void ProcessPatronCommand( ListNode** patronsHead );
-void ProcessItemCommand( ListNode** itemsHead );
-void ProcessAvailableCommand( ListNode** itemsHead );
-void ProcessBorrowCommand( ListNode** itemsHead, ListNode** patronsHead );
-void ProcessDiscardCommand( ListNode** itemsHead );
-void ProcessOutCommand( ListNode** itemsHead, ListNode** patronsHead );
-void ProcessReturnCommand( ListNode** itemsHead, ListNode** patronshead );
-_Bool IsValidCID( const char* cid );
-_Bool IsValidPID( const char* pid );
-int GetValidItemsNum( const char* num );
-int GetSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
+// Main input processing function calls all others
+// based on the first command token
+void processInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName );
+
+// All of these process the specific command and continue 
+// parsing tokens from where processInput left off after the 1st command token
+void processPatronCommand( ListNode** patronsHead );
+void processItemCommand( ListNode** itemsHead );
+void processAvailableCommand( ListNode** itemsHead );
+void processBorrowCommand( ListNode** itemsHead, ListNode** patronsHead );
+void processDiscardCommand( ListNode** itemsHead );
+void processOutCommand( ListNode** itemsHead, ListNode** patronsHead );
+void processReturnCommand( ListNode** itemsHead, ListNode** patronshead );
+
+_Bool isValidCID( const char* cid );
+_Bool isValidPID( const char* pid );
+int getValidItemsNum( const char* num );
+int getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
 #endif

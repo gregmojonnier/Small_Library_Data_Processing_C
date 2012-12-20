@@ -19,7 +19,25 @@
 #include "AllConstants.h"
 
 
-void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName ){
+/*
+* processInput
+* ----------------------------------
+*  
+* Entry point for input processing. This will
+* loop through line by line of the input source.
+* If fileName is NULL we use STDIN, other wise the 
+* file specified is the input source. For each line
+* this function will call a Processing function for
+* the appropriate command.
+*
+* @itemsHead ---------------> Item's list to construct from input commands.
+* @patronsHead -------------> Patron's list to construct from input commands.
+* @fileName ----------------> File for input source, if NULL then use STDIN.
+*
+* @return ------------------> None.
+*
+*/
+void processInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName ){
 
 	_Bool useStdIn = 0;
 	FILE* inputFile;
@@ -46,25 +64,25 @@ void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 		if( parsedCommand != NULL ){
 			
 			if( strcmp( parsedCommand, ADD_PATRON_COMMAND ) == 0 ){
-				ProcessPatronCommand( patronsHead );
+				processPatronCommand( patronsHead );
 			}
 			else if( strcmp( parsedCommand, ADD_ITEM_COMMAND ) == 0 ){
-				ProcessItemCommand( itemsHead );
+				processItemCommand( itemsHead );
 			}
 			else if( strcmp( parsedCommand, "borrow" ) == 0 ){
-				ProcessBorrowCommand( itemsHead, patronsHead );
+				processBorrowCommand( itemsHead, patronsHead );
 			}
 			else if( strcmp( parsedCommand, "return" ) == 0 ){
-				ProcessReturnCommand( itemsHead, patronsHead );
+				processReturnCommand( itemsHead, patronsHead );
 			}
 			else if( strcmp( parsedCommand, "discard" ) == 0 ){
-				ProcessDiscardCommand( itemsHead );
+				processDiscardCommand( itemsHead );
 			}
 			else if( strcmp( parsedCommand, "out" ) == 0 ){
-				ProcessOutCommand( itemsHead, patronsHead );
+				processOutCommand( itemsHead, patronsHead );
 			}
 			else if( strcmp( parsedCommand, "available" ) == 0 ){
-				ProcessAvailableCommand( itemsHead );
+				processAvailableCommand( itemsHead );
 			}
 		}
 	}
@@ -79,7 +97,19 @@ void ProcessInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 	}
 }
 
-void ProcessPatronCommand( ListNode** patronsHead ){
+/*
+* processPatronCommand
+* ----------------------------------
+*  
+* Processes patron command input line and 
+* calls addPatron function to create a new patron data.
+*
+* @patronsHead -------------> Patron's list to add new patron to.
+*
+* @return ------------------> None.
+*
+*/
+void processPatronCommand( ListNode** patronsHead ){
 
 	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	char* pid;
@@ -90,7 +120,7 @@ void ProcessPatronCommand( ListNode** patronsHead ){
 		switch( tokensProcessed ){
 			case 0:
 			  {
-				if( IsValidPID( token ) ){
+				if( isValidPID( token ) ){
 					pid = (char*) allocate( PID_MAX_SIZE * sizeof(char) );
 					strncpy( pid, token, PID_MAX_SIZE - 1 );
 					pid[ PID_MAX_SIZE - 1 ] = '\0';
@@ -104,7 +134,7 @@ void ProcessPatronCommand( ListNode** patronsHead ){
 			  }
 			case 2:
 			  {
-				int nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? GetSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
+				int nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? getSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
 				truncatedName = (char*) allocate(  nameLength * sizeof(char) );
 				strncpy( truncatedName, token, nameLength -1 );
 				truncatedName[ nameLength - 1 ] = '\0';
@@ -129,9 +159,21 @@ void ProcessPatronCommand( ListNode** patronsHead ){
 	}
 }
 
-// item numCopies CID "author" "title"
-void ProcessItemCommand( ListNode** itemsHead ){
+/*
+* processItemCommand
+* ----------------------------------
+*  
+* Processes item command input line and 
+* calls addItem function to create a new item data.
+*
+* @itemsHead -------==------> Item's list to add new item to.
+*
+* @return ------------------> None.
+*
+*/
+void processItemCommand( ListNode** itemsHead ){
 
+// item numCopies CID "author" "title"
 	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	char* cid;
 	char* truncatedAuthor;
@@ -144,7 +186,7 @@ void ProcessItemCommand( ListNode** itemsHead ){
 		switch( tokensProcessed ){
 			case 0:
 			  {
-				numCopies = GetValidItemsNum( token );
+				numCopies = getValidItemsNum( token );
 				if( numCopies < 0 ){
 					return;
 				}
@@ -155,7 +197,7 @@ void ProcessItemCommand( ListNode** itemsHead ){
 			case 1:
 			  {
 				// CID
-				if( IsValidCID( token ) ){
+				if( isValidCID( token ) ){
 					cid = (char*) allocate( strlen( token )+1 * sizeof(char) );
 					strncpy( cid, token, strlen( token ) );
 					cid[ strlen( token ) ] = '\0';
@@ -175,7 +217,7 @@ void ProcessItemCommand( ListNode** itemsHead ){
 			  }
 			case 3:
 			  {
-				int authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? GetSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
+				int authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
 				truncatedAuthor = (char*) allocate(  authorLength * sizeof(char) );
 				strncpy( truncatedAuthor, token, authorLength -1 );
 				truncatedAuthor[ authorLength - 1 ] = '\0';
@@ -185,7 +227,7 @@ void ProcessItemCommand( ListNode** itemsHead ){
 			  }
 			case 5:
 			  {
-				int titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? GetSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
+				int titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? getSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
 
 				truncatedTitle = (char*) allocate(  titleLength * sizeof(char) );
 				strncpy( truncatedTitle, token, titleLength -1 );
@@ -216,65 +258,142 @@ void ProcessItemCommand( ListNode** itemsHead ){
 	}
 }
 
-void ProcessAvailableCommand( ListNode** itemsHead ){
+
+/*
+* processAvailableCommand
+* ----------------------------------
+*  
+* Processes available command input line and 
+* calls getCopiesAvailable function to output copies of item available.
+*
+* @itemsHead -------==------> Item's list to determine copies available from.
+*
+* @return ------------------> None.
+*
+*/
+void processAvailableCommand( ListNode** itemsHead ){
 
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	
-	if( cid != NULL && IsValidCID( cid ) ){
+	if( cid != NULL && isValidCID( cid ) ){
 		getCopiesAvailable( *itemsHead, cid );
 	}
 }
 
-void ProcessBorrowCommand( ListNode** itemsHead, ListNode** patronsHead ){
+
+/*
+* processBorrowCommand
+* ----------------------------------
+*  
+* Processes borrow command input line and 
+* calls borrowItem function.
+*
+* @itemsHead -------==------> Item's list to find item were borrowing from.
+* @patronsHead -----==------> Patrons's list to find patron thats borrowing from.
+*
+* @return ------------------> None.
+*
+*/
+void processBorrowCommand( ListNode** itemsHead, ListNode** patronsHead ){
 	
 	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
-	if( pid != NULL && cid != NULL && IsValidPID( pid ) && IsValidCID( cid ) ){
+	if( pid != NULL && cid != NULL && isValidPID( pid ) && isValidCID( cid ) ){
 		borrowItem( itemsHead, patronsHead, pid, cid );	
 	}
 }
 
+/*
+* processDiscardCommand
+* ----------------------------------
+*  
+* Processes discard command input line and 
+* calls discardCopiesOfItem function.
+*
+* @itemsHead -------==------> Item's list to discard copies of item from.
+*
+* @return ------------------> None.
+*
+*/
 // discard n cid
-void ProcessDiscardCommand( ListNode** itemsHead ){
+void processDiscardCommand( ListNode** itemsHead ){
 
 	const char* numToDiscard = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
 	if( numToDiscard != NULL && cid != NULL ){
-		short int nToDiscard = GetValidItemsNum( numToDiscard );
+		short int nToDiscard = getValidItemsNum( numToDiscard );
 
-		if( nToDiscard >= 0 && IsValidCID( cid ) ){
+		if( nToDiscard >= 0 && isValidCID( cid ) ){
 			discardCopiesOfItem( itemsHead, nToDiscard, cid );
 		}
 	}
 }
 
-void ProcessOutCommand( ListNode** itemsHead, ListNode** patronsHead ){
+/*
+* processOutCommand
+* ----------------------------------
+*  
+* Processes out command input line and 
+* calls patronsWithItemOut or itemsOutByPatron
+* depending on if it is with a CID or PID;
+*
+* @itemsHead -------==------> Item's list.
+* @patronsHead -----==------> Patrons's list.
+*
+* @return ------------------> None.
+*
+*/
+void processOutCommand( ListNode** itemsHead, ListNode** patronsHead ){
 
 	const char* uid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
 	if( uid != NULL ){
-		if( IsValidCID( uid ) ){
+		if( isValidCID( uid ) ){
 			patronsWithItemOut( *itemsHead, uid );
 		}
-		else if( IsValidPID( uid ) ){
+		else if( isValidPID( uid ) ){
 			itemsOutByPatron( *patronsHead, uid );
 		}
 	}
 }
 
-void ProcessReturnCommand( ListNode** itemsHead, ListNode** patronsHead ){
+/*
+* processReturnCommand
+* ----------------------------------
+*  
+* Processes return command input line and 
+* calls returnPatronsItem.
+*
+* @itemsHead -------==------> Item's list.
+* @patronsHead -----==------> Patrons's list.
+*
+* @return ------------------> None.
+*
+*/
+void processReturnCommand( ListNode** itemsHead, ListNode** patronsHead ){
 
 	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
-	if( pid != NULL && cid != NULL && IsValidPID( pid ) && IsValidCID ){
+	if( pid != NULL && cid != NULL && isValidPID( pid ) && isValidCID ){
 		returnPatronsItem( *itemsHead, *patronsHead, pid, cid );
 	}
 }
 
-_Bool IsValidCID( const char* cid ){
+/*
+* isValidCID
+* ----------------------------------
+*  
+* Determines if a string is a valid CID.
+*
+* @cid -------------==------> Char* to be checked.
+*
+* @return ------------------> _Bool indicating CID validity.
+*
+*/
+_Bool isValidCID( const char* cid ){
 
 	if( cid == NULL ){
 		return 0;
@@ -315,7 +434,18 @@ _Bool IsValidCID( const char* cid ){
 	return 1;
 }
 
-_Bool IsValidPID( const char* pid ){
+/*
+* isValidPID
+* ----------------------------------
+*  
+* Determines if a string is a valid PID.
+*
+* @pid -------------==------> Char* to be checked.
+*
+* @return ------------------> _Bool indicating PID validity.
+*
+*/
+_Bool isValidPID( const char* pid ){
 
 	if( pid == NULL ){
 		return 0;
@@ -333,7 +463,20 @@ _Bool IsValidPID( const char* pid ){
 	return 0;
 }
 
-int GetValidItemsNum( const char* num ){
+/*
+* getValidItemsNum
+* ----------------------------------
+*  
+* Takes a string read in from input
+* converts it to a number and determines if its
+* a valid Item's number. -1 is returned if it is not.
+*
+* @num -------------==------> Char* to be checked.
+*
+* @return ------------------> Int that was converted from char*.
+*
+*/
+int getValidItemsNum( const char* num ){
 	if( num == NULL ){
 		return -1;
 	}
@@ -346,7 +489,22 @@ int GetValidItemsNum( const char* num ){
 	return number;
 }
 
-int GetSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString ){
+/*
+* getSizeToTrimTailTo
+* ----------------------------------
+*  
+* Takes a string read in from input
+* and the maximum size is should be.'
+* It then will return the indice that would trim
+* trailing white space from the maximum size.
+*
+* @token -----------==------> Char* to find size to trim to. 
+* @maxCharsInString -=------> Maximum number of chars token should be.
+*
+* @return ------------------> Int that is size to trim token to.
+*
+*/
+int getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString ){
 	if( token == NULL ){
 		return 0;
 	}

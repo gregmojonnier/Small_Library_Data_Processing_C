@@ -333,6 +333,18 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 	return 1;
 }
 
+/*
+* printAllItemsStatus
+* ----------------------------------
+*  
+* Loops through entire Item linked list and calls
+* printItemStatus() on the ItemData.
+*
+* @itemsHead ---------------> Item list to print out.
+*
+* @return ------------------> None.
+*
+*/
 void printAllItemsStatus( ListNode* itemsHead ){
 
 	ListNode* itemToPrint = itemsHead;
@@ -346,6 +358,18 @@ void printAllItemsStatus( ListNode* itemsHead ){
 	}
 }
 
+/*
+* printAllPatronsStatus
+* ----------------------------------
+*  
+* Loops through entire Patron linked list and calls
+* printPatronStatus() on the ItemData.
+*
+* @patronsHead ---------------> Patron list to print out.
+*
+* @return ------------------> None.
+*
+*/
 void printAllPatronsStatus( ListNode* patronsHead ){
 
 	ListNode* patronToPrint = patronsHead;
@@ -361,6 +385,17 @@ void printAllPatronsStatus( ListNode* patronsHead ){
 	}
 }
 
+/*
+* printItemStatus
+* ----------------------------------
+*  
+* Prints status of an individual item.
+*
+* @items -------------------> Item to print status of.
+*
+* @return ------------------> None.
+*
+*/
 void printItemStatus( ItemData* item ){
 	if( item == NULL ){
 		return;
@@ -383,6 +418,18 @@ void printItemStatus( ItemData* item ){
 	}
 }
 
+
+/*
+* printPatronStatus
+* ----------------------------------
+*  
+* Prints status of an individual patron.
+*
+* @patron ------------------> patron to print status of.
+*
+* @return ------------------> None.
+*
+*/
 void printPatronStatus( PatronData* patron ){
 
 	ListNode* itemsCurrentlyRenting = patron->itemsCurrentlyRenting;
