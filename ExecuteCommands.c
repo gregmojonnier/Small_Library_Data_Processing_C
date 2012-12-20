@@ -13,6 +13,7 @@
 #include <string.h>
 #include <allocate.h>
 #include <stdio.h>
+#include "AllConstants.h"
 
 
 /*
@@ -177,13 +178,6 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 		return 0;
 	}
 
-	i->cid = (char*) allocate( ( sizeof(char) * strlen(cid) ) + 1 );
-
-	if( i->cid == NULL ){
-		printf("Memory allocation failed!\n");
-		return 0;
-	}
-
 	i->author = (char*) allocate( ( sizeof(char) * strlen(author) ) + 1 );
 
 	if( i->author == NULL ){
@@ -198,10 +192,27 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 		return 0;
 	}
 
+	char leftCIDBuffer[ CID_MIN_SIZE ];
+	char rightCIDBuffer[ CID_MIN_SIZE ];
+
+	size_t periodLocation = strcspn( cid, &PERIOD_WORD_SEPARATOR );
+	
+	strncpy( leftCIDBuffer, cid, periodLocation );
+	leftCIDBuffer[ periodLocation ] = '\0';
+
+	strcpy( rightCIDBuffer, cid+periodLocation+1 );
+
+	long int leftCID = 0;
+	leftCID = strtoul( leftCIDBuffer, NULL, 10 );
+
+	long int rightCID = 0;
+	rightCID = strtoul( rightCIDBuffer, NULL, 10 );
+
 	i->numCopies = numCopies;
 	i->patronsCurrentlyRenting = NULL;
+	i->leftCID = leftCID;
+	i->rightCID = rightCID;
 
-	strcpy( i->cid, cid );
 	strcpy( i->author, author );
 	strcpy( i->title, title );
 	
@@ -439,16 +450,21 @@ void printItemStatus( ItemData* item ){
 
 	ListNode* patronsCurrentlyRenting = item->patronsCurrentlyRenting;
 
+	char fullCID[ CID_MAX_SIZE ];
+	sprintf( fullCID, "%d.%d", item->leftCID, item->rightCID );
+
 	if( patronsCurrentlyRenting == NULL ){
-		printf( "Item %s (%s/%s) is not checked out\n", item->cid, item->author, item->title ); 
+		printf( "Item %s (%s/%s) is not checked out\n", fullCID, item->author, item->title ); 
 	}
 	else{
-		printf( "Item %s (%s/%s) is checked out to:\n", item->cid, item->author, item->title );
+		printf( "Item %s (%s/%s) is checked out to:\n", fullCID, item->author, item->title );
 
 		while( patronsCurrentlyRenting != NULL ){
 			ListNode* patronNode = (ListNode*)patronsCurrentlyRenting->data;
 			PatronData* p = (PatronData*) patronNode->data;
-			printf( "   %s (%s)\n", p->pid, p->name );
+			if( p != NULL ){
+				printf( "   %s (%s)\n", p->pid, p->name );
+			}
 			patronsCurrentlyRenting = patronsCurrentlyRenting->next;
 		}
 	}
@@ -479,7 +495,13 @@ void printPatronStatus( PatronData* patron ){
 		while( itemsCurrentlyRenting != NULL ){
 			ListNode* itemNode = (ListNode*)itemsCurrentlyRenting->data;
 			ItemData* i = (ItemData*) itemNode->data;
-			printf( "   %s (%s/%s)\n", i->cid, i->author, i->title );
+
+			if( i != NULL ){
+				char fullCID[ CID_MAX_SIZE ];
+				sprintf( fullCID, "%d.%d", i->leftCID, i->rightCID );
+
+				printf( "   %s (%s/%s)\n", fullCID, i->author, i->title );
+			}
 			itemsCurrentlyRenting = itemsCurrentlyRenting->next;
 		}
 	}

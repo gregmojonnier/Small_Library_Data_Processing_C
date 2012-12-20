@@ -11,6 +11,7 @@
 #include <allocate.h>
 #include <stdio.h>
 #include <string.h>
+#include "AllConstants.h"
 
 /*
 * insertNodeInOrder
@@ -159,9 +160,8 @@ _Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem ){
 			
 			if( titlePrecedence == 0 ){
 				// cid
-				int cidPrecedence = strcmp( newItem->cid, currentItem->cid );
-				
-				if( cidPrecedence > 0 ){
+				if( ( newItem->leftCID > currentItem->leftCID || newItem->leftCID == currentItem->leftCID ) 
+										&& newItem->rightCID > currentItem->rightCID ){
 					return 1;
 				}
 				else{
@@ -314,7 +314,6 @@ _Bool freeItemDataStruct( void* item ){
 	}
 	unallocate( i->author );
 	unallocate( i->title );
-	unallocate( i->cid );
 	// numCopies gets taken care of when full struct is unallocated
 
 	ListNode* nodeToDelete = i->patronsCurrentlyRenting;
@@ -465,7 +464,24 @@ _Bool doesItemMatchUID( const char* uid, void* data ){
 	if( uid == NULL || i == NULL ){
 		return 0;
 	}
-	return ( strcmp( i->cid, uid ) == 0 );
+
+	char leftCIDBuffer[ CID_MIN_SIZE ];
+	char rightCIDBuffer[ CID_MIN_SIZE ];
+
+	size_t periodLocation = strcspn( uid, &PERIOD_WORD_SEPARATOR );
+	
+	strncpy( leftCIDBuffer, uid, periodLocation );
+	leftCIDBuffer[ periodLocation ] = '\0';
+
+	strcpy( rightCIDBuffer, uid+periodLocation+1 );
+
+	long int leftCID = 0;
+	leftCID = strtoul( leftCIDBuffer, NULL, 10 );
+
+	long int rightCID = 0;
+	rightCID = strtoul( rightCIDBuffer, NULL, 10 );
+
+	return ( i->leftCID == leftCID && i->rightCID == rightCID );
 }
 
 

@@ -39,7 +39,9 @@ typedef struct _ListNode {
 typedef struct {
 	char* author;
 	char* title;
-	char* cid;
+	//char* cid;
+	unsigned int leftCID:10;
+	unsigned int rightCID:10;
 	// allows 0-127
 	unsigned int numCopies:7;
 	ListNode* patronsCurrentlyRenting;
