@@ -39,7 +39,6 @@ typedef struct _ListNode {
 typedef struct {
 	char* author;
 	char* title;
-	//char* cid;
 	unsigned int leftCID:10;
 	unsigned int rightCID:10;
 	// allows 0-127
@@ -60,7 +59,8 @@ typedef struct {
 */
 typedef struct {
 	char* name;
-	char pid[ 6 ];
+	char leftPID[2];
+	unsigned int rightPID:14;
 	ListNode* itemsCurrentlyRenting;
 } PatronData;
 

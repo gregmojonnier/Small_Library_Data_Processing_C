@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Sep  7 2011) on Sun Dec 16 15:46:08 2012
+# Created by gmakemake (Ubuntu Sep  7 2011) on Thu Dec 20 16:48:34 2012
 #
 
 #
@@ -85,10 +85,10 @@ project1:	project1.o $(OBJFILES)
 # Dependencies
 #
 
-ExecuteCommands.o:	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h
-LinkedDataNodeOperations.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h
+ExecuteCommands.o:	AllConstants.h ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h
+LinkedDataNodeOperations.o:	AllConstants.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h
 SanitizeInput.o:	AllConstants.h ExecuteCommands.h LinkedDataNodeStructures.h SanitizeInput.h
-project1.o:	ExecuteCommands.h LinkedDataNodeOperations.h LinkedDataNodeStructures.h SanitizeInput.h
+project1.o:	LinkedDataNodeOperations.h LinkedDataNodeStructures.h SanitizeInput.h
 
 #
 # Housekeeping

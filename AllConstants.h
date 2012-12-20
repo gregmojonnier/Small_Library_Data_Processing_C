@@ -9,23 +9,28 @@
 * @author Greg Mojonnier
 */
 
-static const int LINE_MAX_SIZE = 256;
+#define LINE_MAX_SIZE 256
 // pid size max is 6( this is 5 + 1 spot or \0)
-static const int PID_MAX_SIZE = 6;
-static const int NAME_MAX_SIZE = 36;
-static const int CID_MIN_SIZE = 4;
-static const int CID_MAX_SIZE = 8;
-static const int AUTHOR_MAX_SIZE = 52;
-static const int TITLE_MAX_SIZE = 52;
-static const int ITEM_NUMS_MIN_SIZE = 0;
-static const int ITEM_NUMS_MAX_SIZE = 99;
+#define PID_MAX_SIZE 6
+#define NAME_MAX_SIZE 36
+#define CID_MIN_SIZE 4
+#define CID_MAX_SIZE 8
+#define AUTHOR_MAX_SIZE 52
+#define TITLE_MAX_SIZE 52
+#define ITEM_NUMS_MIN_SIZE 0
+#define ITEM_NUMS_MAX_SIZE 99
 
-static const char* DEFAULT_WORD_SEPARATORS = " \t\n";
-static const char* QUOTE_WORD_SEPARATOR = "\"";
-static const char PERIOD_WORD_SEPARATOR = '.';
+#define DEFAULT_WORD_SEPARATORS " \t\n"
+#define QUOTE_WORD_SEPARATOR "\""
+#define PERIOD_WORD_SEPARATOR "."
+#define PERIOD_WORD_SEPARATOR_CH '.'
 
-
-static const char* ADD_PATRON_COMMAND = "patron";
-static const char* ADD_ITEM_COMMAND = "item";
+#define ADD_PATRON_COMMAND "patron"
+#define ADD_ITEM_COMMAND "item"
+#define BORROW_ITEM_COMMAND "borrow"
+#define RETURN_ITEM_COMMAND "return"
+#define DISCARD_ITEM_COMMAND "discard"
+#define OUT_COMMAND "out"
+#define AVAILABLE_ITEM_COMMAND "available"
 
 #endif

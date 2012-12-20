@@ -62,19 +62,19 @@ void processInput( ListNode** itemsHead, ListNode** patronsHead, FILE** inputFil
 			else if( strcmp( parsedCommand, ADD_ITEM_COMMAND ) == 0 ){
 				processItemCommand( itemsHead );
 			}
-			else if( strcmp( parsedCommand, "borrow" ) == 0 ){
+			else if( strcmp( parsedCommand, BORROW_ITEM_COMMAND ) == 0 ){
 				processBorrowCommand( itemsHead, patronsHead );
 			}
-			else if( strcmp( parsedCommand, "return" ) == 0 ){
+			else if( strcmp( parsedCommand, RETURN_ITEM_COMMAND ) == 0 ){
 				processReturnCommand( itemsHead, patronsHead );
 			}
-			else if( strcmp( parsedCommand, "discard" ) == 0 ){
+			else if( strcmp( parsedCommand, DISCARD_ITEM_COMMAND ) == 0 ){
 				processDiscardCommand( itemsHead );
 			}
-			else if( strcmp( parsedCommand, "out" ) == 0 ){
+			else if( strcmp( parsedCommand, OUT_COMMAND ) == 0 ){
 				processOutCommand( itemsHead, patronsHead );
 			}
-			else if( strcmp( parsedCommand, "available" ) == 0 ){
+			else if( strcmp( parsedCommand, AVAILABLE_ITEM_COMMAND ) == 0 ){
 				processAvailableCommand( itemsHead );
 			}
 		}
@@ -102,8 +102,9 @@ void processInput( ListNode** itemsHead, ListNode** patronsHead, FILE** inputFil
 void processPatronCommand( ListNode** patronsHead ){
 
 	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
-	char* pid;
-	char* truncatedName;
+	char pid[ PID_MAX_SIZE ];
+	char truncatedName[ NAME_MAX_SIZE ];
+
 	int tokensProcessed = 0;
 
 	for( ; tokensProcessed < 3 && token != NULL; tokensProcessed++ ){
@@ -111,12 +112,6 @@ void processPatronCommand( ListNode** patronsHead ){
 			case 0:
 			  {
 				if( isValidPID( token ) ){
-					pid = (char*) allocate( PID_MAX_SIZE * sizeof(char) );
-
-					if( pid == NULL ){
-						printf("Memory allocation failed!\n");
-						return;
-					}
 					strncpy( pid, token, PID_MAX_SIZE - 1 );
 					pid[ PID_MAX_SIZE - 1 ] = '\0';
 				}
@@ -130,12 +125,6 @@ void processPatronCommand( ListNode** patronsHead ){
 			case 2:
 			  {
 				int nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? getSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
-				truncatedName = (char*) allocate(  nameLength * sizeof(char) );
-
-				if( truncatedName == NULL ){
-					printf("Memory allocation failed!\n");
-					return;
-				}
 				strncpy( truncatedName, token, nameLength -1 );
 				truncatedName[ nameLength - 1 ] = '\0';
 			  }
@@ -149,13 +138,6 @@ void processPatronCommand( ListNode** patronsHead ){
 
 	if( pid != NULL && truncatedName != NULL ){
 		addPatron( patronsHead, pid, truncatedName );
-	}
-
-	switch( tokensProcessed ){
-		case 3:
-			unallocate(truncatedName);
-		case 1:
-			unallocate( pid );
 	}
 }
 
@@ -175,9 +157,9 @@ void processItemCommand( ListNode** itemsHead ){
 
 // item numCopies CID "author" "title"
 	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
-	char* cid;
-	char* truncatedAuthor;
-	char* truncatedTitle;
+	char cid[ CID_MAX_SIZE ];
+	char truncatedAuthor[ AUTHOR_MAX_SIZE ];
+	char truncatedTitle[ TITLE_MAX_SIZE ];
 	long int numCopies = 0;
 	int tokensProcessed = 0;
 
@@ -198,15 +180,9 @@ void processItemCommand( ListNode** itemsHead ){
 			  {
 				// CID
 				if( isValidCID( token ) ){
-					cid = (char*) allocate( strlen( token )+1 * sizeof(char) );
 
-					if( cid == NULL ){
-						printf("Memory allocation failed!\n");
-						return;
-					}
 					strncpy( cid, token, strlen( token ) );
 					cid[ strlen( token ) ] = '\0';
-
 				}
 				else{
 					return;
@@ -223,15 +199,10 @@ void processItemCommand( ListNode** itemsHead ){
 			case 3:
 			  {
 				int authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
-				truncatedAuthor = (char*) allocate(  authorLength * sizeof(char) );
-
-				if( truncatedAuthor == NULL ){
-					printf("Memory allocation failed!\n");
-					return;
-				}
+				
 				strncpy( truncatedAuthor, token, authorLength -1 );
 				truncatedAuthor[ authorLength - 1 ] = '\0';
-				
+
 				token = strtok( 0, QUOTE_WORD_SEPARATOR );
 				break;
 			  }
@@ -239,15 +210,9 @@ void processItemCommand( ListNode** itemsHead ){
 			  {
 				int titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? getSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
 
-				truncatedTitle = (char*) allocate(  titleLength * sizeof(char) );
-
-				if( truncatedTitle == NULL ){
-					printf("Memory allocation failed!\n");
-					return;
-				}
 				strncpy( truncatedTitle, token, titleLength -1 );
 				truncatedTitle[ titleLength - 1 ] = '\0';
-				
+
 				token = strtok( 0, QUOTE_WORD_SEPARATOR );
 				break;
 			  }
@@ -261,15 +226,6 @@ void processItemCommand( ListNode** itemsHead ){
 
 	if( cid != NULL && truncatedAuthor != NULL && truncatedTitle != NULL ){
 		addItem( itemsHead, numCopies, cid, truncatedAuthor, truncatedTitle );
-	}
-
-	switch( tokensProcessed ){
-		case 6:
-			unallocate( truncatedTitle );
-		case 4:
-			unallocate( truncatedAuthor );
-		case 2:
-			unallocate( cid );
 	}
 }
 
@@ -418,7 +374,7 @@ _Bool isValidCID( const char* cid ){
 		return 0;
 	}
 
-	const char* periodLocationIterator = strchr( cid, PERIOD_WORD_SEPARATOR );
+	const char* periodLocationIterator = strchr( cid, PERIOD_WORD_SEPARATOR_CH );
 	if( periodLocationIterator == NULL ){
 		// Error needs period?
 		return 0;

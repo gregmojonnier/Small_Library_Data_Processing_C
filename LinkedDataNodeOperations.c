@@ -111,9 +111,8 @@ _Bool newPatronHasLowerPrecedence( void* _newPatron, void* _currentPatron ){
 
 		if( namePrecedence == 0 ){
 			// do by PID
-			int pidPrecedence = strcmp( newPatron->pid, currentPatron->pid );
-			
-			if( pidPrecedence > 0 ){
+
+			if( newPatron->leftPID[0] > currentPatron->leftPID[0] || ( newPatron->leftPID[0] == currentPatron->leftPID[0] && newPatron->rightPID > currentPatron->rightPID ) ){
 				return 1;
 			}
 			else{
@@ -442,8 +441,10 @@ _Bool doesPatronMatchUID( const char* uid, void* data ){
 	if( uid == NULL || p == NULL ){
 		return 0;
 	}
+	long int rightPID = 0;
+	rightPID = strtoul( uid+1, NULL, 10 );
 
-	return ( strcmp( p->pid, uid ) == 0 );
+	return( *uid == p->leftPID[0] && rightPID == p->rightPID);
 }
 
 /*
@@ -468,7 +469,7 @@ _Bool doesItemMatchUID( const char* uid, void* data ){
 	char leftCIDBuffer[ CID_MIN_SIZE ];
 	char rightCIDBuffer[ CID_MIN_SIZE ];
 
-	size_t periodLocation = strcspn( uid, &PERIOD_WORD_SEPARATOR );
+	size_t periodLocation = strcspn( uid, PERIOD_WORD_SEPARATOR );
 	
 	strncpy( leftCIDBuffer, uid, periodLocation );
 	leftCIDBuffer[ periodLocation ] = '\0';

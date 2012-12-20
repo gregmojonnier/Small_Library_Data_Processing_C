@@ -195,7 +195,7 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 	char leftCIDBuffer[ CID_MIN_SIZE ];
 	char rightCIDBuffer[ CID_MIN_SIZE ];
 
-	size_t periodLocation = strcspn( cid, &PERIOD_WORD_SEPARATOR );
+	size_t periodLocation = strcspn( cid, PERIOD_WORD_SEPARATOR ); 
 	
 	strncpy( leftCIDBuffer, cid, periodLocation );
 	leftCIDBuffer[ periodLocation ] = '\0';
@@ -371,7 +371,14 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 	}
 
 	strcpy( p->name, name );
-	strcpy( p->pid, pid );
+	strncpy( p->leftPID, pid, 1 );
+	p->leftPID[ 1 ] = '\0';
+
+	long int rightPID = 0;
+	rightPID = strtoul( pid+1, NULL, 10 );
+
+	p->rightPID = rightPID;
+
 	p->itemsCurrentlyRenting = NULL;
 
 	if( !insertNodeInOrder( head, (void*)p, newPatronHasLowerPrecedence ) ){
@@ -463,7 +470,9 @@ void printItemStatus( ItemData* item ){
 			ListNode* patronNode = (ListNode*)patronsCurrentlyRenting->data;
 			PatronData* p = (PatronData*) patronNode->data;
 			if( p != NULL ){
-				printf( "   %s (%s)\n", p->pid, p->name );
+				char fullPID[ PID_MAX_SIZE ];
+				sprintf( fullPID, "%s%04i", p->leftPID, p->rightPID );
+				printf( "   %s (%s)\n", fullPID, p->name );
 			}
 			patronsCurrentlyRenting = patronsCurrentlyRenting->next;
 		}
@@ -486,11 +495,14 @@ void printPatronStatus( PatronData* patron ){
 
 	ListNode* itemsCurrentlyRenting = patron->itemsCurrentlyRenting;
 
+	char fullPID[ PID_MAX_SIZE ];
+	sprintf( fullPID, "%s%04i", patron->leftPID, patron->rightPID );
+
 	if( itemsCurrentlyRenting == NULL ){
-		printf( "Patron %s (%s) has no items checked out\n", patron->pid, patron->name ); 
+		printf( "Patron %s (%s) has no items checked out\n", fullPID, patron->name ); 
 	}
 	else{
-		printf( "Patron %s (%s) has these items checked out:\n", patron->pid, patron->name );
+		printf( "Patron %s (%s) has these items checked out:\n", fullPID, patron->name );
 
 		while( itemsCurrentlyRenting != NULL ){
 			ListNode* itemNode = (ListNode*)itemsCurrentlyRenting->data;
