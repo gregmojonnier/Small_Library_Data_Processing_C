@@ -112,6 +112,11 @@ void processPatronCommand( ListNode** patronsHead ){
 			  {
 				if( isValidPID( token ) ){
 					pid = (char*) allocate( PID_MAX_SIZE * sizeof(char) );
+
+					if( pid == NULL ){
+						printf("Memory allocation failed!\n");
+						return;
+					}
 					strncpy( pid, token, PID_MAX_SIZE - 1 );
 					pid[ PID_MAX_SIZE - 1 ] = '\0';
 				}
@@ -126,6 +131,11 @@ void processPatronCommand( ListNode** patronsHead ){
 			  {
 				int nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? getSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
 				truncatedName = (char*) allocate(  nameLength * sizeof(char) );
+
+				if( truncatedName == NULL ){
+					printf("Memory allocation failed!\n");
+					return;
+				}
 				strncpy( truncatedName, token, nameLength -1 );
 				truncatedName[ nameLength - 1 ] = '\0';
 			  }
@@ -189,6 +199,11 @@ void processItemCommand( ListNode** itemsHead ){
 				// CID
 				if( isValidCID( token ) ){
 					cid = (char*) allocate( strlen( token )+1 * sizeof(char) );
+
+					if( cid == NULL ){
+						printf("Memory allocation failed!\n");
+						return;
+					}
 					strncpy( cid, token, strlen( token ) );
 					cid[ strlen( token ) ] = '\0';
 
@@ -209,6 +224,11 @@ void processItemCommand( ListNode** itemsHead ){
 			  {
 				int authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
 				truncatedAuthor = (char*) allocate(  authorLength * sizeof(char) );
+
+				if( truncatedAuthor == NULL ){
+					printf("Memory allocation failed!\n");
+					return;
+				}
 				strncpy( truncatedAuthor, token, authorLength -1 );
 				truncatedAuthor[ authorLength - 1 ] = '\0';
 				
@@ -220,6 +240,11 @@ void processItemCommand( ListNode** itemsHead ){
 				int titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? getSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
 
 				truncatedTitle = (char*) allocate(  titleLength * sizeof(char) );
+
+				if( truncatedTitle == NULL ){
+					printf("Memory allocation failed!\n");
+					return;
+				}
 				strncpy( truncatedTitle, token, titleLength -1 );
 				truncatedTitle[ titleLength - 1 ] = '\0';
 				

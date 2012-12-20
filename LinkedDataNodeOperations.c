@@ -39,6 +39,7 @@ _Bool insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLo
 	// special error message for if allocation fail?
 	ListNode* newNode = (ListNode*) allocate( sizeof( ListNode ) ); 
 	if( newNode == NULL ){
+		printf("Memory allocation failed!\n");
 		return 0;
 	}
 	newNode->data = data;

@@ -171,9 +171,33 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 	}
 
 	ItemData* i = (ItemData*) allocate( sizeof(ItemData) );
+
+	if( i == NULL ){
+		printf("Memory allocation failed!\n");
+		return 0;
+	}
+
 	i->cid = (char*) allocate( ( sizeof(char) * strlen(cid) ) + 1 );
+
+	if( i->cid == NULL ){
+		printf("Memory allocation failed!\n");
+		return 0;
+	}
+
 	i->author = (char*) allocate( ( sizeof(char) * strlen(author) ) + 1 );
+
+	if( i->author == NULL ){
+		printf("Memory allocation failed!\n");
+		return 0;
+	}
+
 	i->title = (char*) allocate( ( sizeof(char) * strlen(title) ) + 1 );
+
+	if( i->title == NULL ){
+		printf("Memory allocation failed!\n");
+		return 0;
+	}
+
 	i->numCopies = numCopies;
 	i->patronsCurrentlyRenting = NULL;
 
@@ -322,7 +346,19 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 	}
 
 	PatronData* p = (PatronData*) allocate( sizeof(PatronData) );
+
+	if( p == NULL ){
+		printf("Memory allocation failed!\n");
+		return 0;
+	}
+
 	p->name = (char*) allocate( ( sizeof(char) * strlen(name) ) + 1 );
+
+	if( p->name == NULL ){
+		printf("Memory allocation failed!\n");
+		return 0;
+	}
+
 	strcpy( p->name, name );
 	strcpy( p->pid, pid );
 	p->itemsCurrentlyRenting = NULL;
