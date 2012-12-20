@@ -11,7 +11,6 @@
 
 #include "SanitizeInput.h"
 #include "ExecuteCommands.h"
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <allocate.h>
@@ -32,32 +31,26 @@
 *
 * @itemsHead ---------------> Item's list to construct from input commands.
 * @patronsHead -------------> Patron's list to construct from input commands.
-* @fileName ----------------> File for input source, if NULL then use STDIN.
+* @inputFile ---------------> File of input source, if NULL then use STDIN.
 *
 * @return ------------------> None.
 *
 */
-void processInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName ){
+void processInput( ListNode** itemsHead, ListNode** patronsHead, FILE** inputFile ){
 
 	_Bool useStdIn = 0;
-	FILE* inputFile;
 
-	if( fileName == NULL ){
+	if( inputFile == NULL ){
 		useStdIn = 1;
 	}
-
-	if( !useStdIn ){
-		inputFile = fopen( fileName, "r" );
-
-		if( inputFile == NULL ){
-			return;
-		}
+	else if( *inputFile == NULL ){
+		return;
 	}
 
 	char fullLine[ LINE_MAX_SIZE ];
 
 	// get each line until end of file
-	while( fgets( fullLine, LINE_MAX_SIZE, ( ( useStdIn ) ? stdin : inputFile ) ) != NULL ){
+	while( fgets( fullLine, LINE_MAX_SIZE, ( ( useStdIn ) ? stdin : *inputFile ) ) != NULL ){
 		// parse first word of line based on word separators
 		char* parsedCommand = strtok( fullLine, DEFAULT_WORD_SEPARATORS );;
 
@@ -86,10 +79,7 @@ void processInput( ListNode** itemsHead, ListNode** patronsHead, const char* fil
 			}
 		}
 	}
-	if( !useStdIn ){
-		fclose( inputFile );
-	}
-	else{
+	if( useStdIn ){
 		// if using stdin then we need to print finising statuses of everything
 		printf("\n");
 		printAllItemsStatus( *itemsHead );

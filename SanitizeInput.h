@@ -12,10 +12,11 @@
 */
 
 #include "LinkedDataNodeStructures.h"
+#include <stdio.h>
 
 // Main input processing function calls all others
 // based on the first command token
-void processInput( ListNode** itemsHead, ListNode** patronsHead, const char* fileName );
+void processInput( ListNode** itemsHead, ListNode** patronsHead, FILE** inputFile );
 
 // All of these process the specific command and continue 
 // parsing tokens from where processInput left off after the 1st command token

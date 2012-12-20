@@ -12,11 +12,9 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "ExecuteCommands.h"
-#include "LinkedDataNodeOperations.h"
 #include <allocate.h>
 #include "SanitizeInput.h"
+#include "LinkedDataNodeOperations.h"
 
 int main( int argc, char *argv[] ){
 
@@ -45,17 +43,17 @@ int main( int argc, char *argv[] ){
 		return( EXIT_FAILURE );
 	}
 
-	fclose( initialPatronsFile );
-	fclose( initialItemsFile );
 
 
 	ListNode* patronsHead = NULL;
 	ListNode* itemsHead = NULL;
 
-	processInput(&itemsHead, &patronsHead, argv[ 1 ] );
-	processInput(&itemsHead, &patronsHead, argv [ 2 ] );
-
+	processInput(&itemsHead, &patronsHead, &initialPatronsFile );
+	processInput(&itemsHead, &patronsHead, &initialItemsFile );
 	processInput(&itemsHead, &patronsHead, NULL );
+
+	fclose( initialPatronsFile );
+	fclose( initialItemsFile );
 
 	deleteAndFreeList( patronsHead, freePatronDataStruct );
 	deleteAndFreeList( itemsHead, freeItemDataStruct );
