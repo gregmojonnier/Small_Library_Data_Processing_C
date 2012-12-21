@@ -20,10 +20,7 @@ int main( int argc, char *argv[] ){
 
 	// User must supply patron_file and item_file
 	if( argc != 3 ){
-		// verify is tab required before output?
 		fputs( "usuage:  project1 patron_file item_file\n", stderr );
-		printf("%i", EXIT_FAILURE );
-		printf("%i", EXIT_SUCCESS );
 		return( EXIT_FAILURE );
 	}
 

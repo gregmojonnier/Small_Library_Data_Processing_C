@@ -116,7 +116,6 @@ void processPatronCommand( ListNode** patronsHead ){
 					pid[ PID_MAX_SIZE - 1 ] = '\0';
 				}
 				else{
-					// DONT CONTINUE???? ERROR?
 					return;
 				}
 				token = strtok( 0, QUOTE_WORD_SEPARATOR );
