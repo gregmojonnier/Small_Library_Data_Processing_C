@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include "AllConstants.h"
 
+extern FILE* g_InputFile;
 
 /*
 * processInput
@@ -36,21 +37,12 @@
 * @return ------------------> None.
 *
 */
-void processInput( ListNode** itemsHead, ListNode** patronsHead, FILE** inputFile ){
-
-	_Bool useStdIn = 0;
-
-	if( inputFile == NULL ){
-		useStdIn = 1;
-	}
-	else if( *inputFile == NULL ){
-		return;
-	}
+void processInput( ListNode** itemsHead, ListNode** patronsHead ){
 
 	char fullLine[ LINE_MAX_SIZE ];
 
 	// get each line until end of file
-	while( fgets( fullLine, LINE_MAX_SIZE, ( ( useStdIn ) ? stdin : *inputFile ) ) != NULL ){
+	while( fgets( fullLine, LINE_MAX_SIZE, ( ( g_InputFile == NULL ) ? stdin : g_InputFile ) ) != NULL ){
 		// parse first word of line based on word separators
 		char* parsedCommand = strtok( fullLine, DEFAULT_WORD_SEPARATORS );;
 
@@ -79,7 +71,7 @@ void processInput( ListNode** itemsHead, ListNode** patronsHead, FILE** inputFil
 			}
 		}
 	}
-	if( useStdIn ){
+	if( g_InputFile == NULL ){
 		// if using stdin then we need to print finising statuses of everything
 		printf("\n");
 		printAllItemsStatus( *itemsHead );
@@ -105,7 +97,7 @@ void processPatronCommand( ListNode** patronsHead ){
 	char pid[ PID_MAX_SIZE ];
 	char truncatedName[ NAME_MAX_SIZE ];
 
-	int tokensProcessed = 0;
+	unsigned char tokensProcessed = 0;
 
 	for( ; tokensProcessed < 3 && token != NULL; tokensProcessed++ ){
 		switch( tokensProcessed ){
@@ -123,7 +115,7 @@ void processPatronCommand( ListNode** patronsHead ){
 			  }
 			case 2:
 			  {
-				int nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? getSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
+				unsigned char nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? getSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
 				strncpy( truncatedName, token, nameLength -1 );
 				truncatedName[ nameLength - 1 ] = '\0';
 			  }
@@ -159,8 +151,8 @@ void processItemCommand( ListNode** itemsHead ){
 	char cid[ CID_MAX_SIZE ];
 	char truncatedAuthor[ AUTHOR_MAX_SIZE ];
 	char truncatedTitle[ TITLE_MAX_SIZE ];
-	long int numCopies = 0;
-	int tokensProcessed = 0;
+	unsigned char numCopies = 0;
+	unsigned char tokensProcessed = 0;
 
 	for( ; tokensProcessed < 6 && token != NULL; tokensProcessed++ ){
 	
@@ -197,7 +189,7 @@ void processItemCommand( ListNode** itemsHead ){
 			  }
 			case 3:
 			  {
-				int authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
+				unsigned char authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
 				
 				strncpy( truncatedAuthor, token, authorLength -1 );
 				truncatedAuthor[ authorLength - 1 ] = '\0';
@@ -207,7 +199,7 @@ void processItemCommand( ListNode** itemsHead ){
 			  }
 			case 5:
 			  {
-				int titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? getSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
+				unsigned char titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? getSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
 
 				strncpy( truncatedTitle, token, titleLength -1 );
 				truncatedTitle[ titleLength - 1 ] = '\0';
@@ -293,7 +285,7 @@ void processDiscardCommand( ListNode** itemsHead ){
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
 	if( numToDiscard != NULL && cid != NULL ){
-		short int nToDiscard = getValidItemsNum( numToDiscard );
+		unsigned char nToDiscard = getValidItemsNum( numToDiscard );
 
 		if( nToDiscard >= 0 && isValidCID( cid ) ){
 			discardCopiesOfItem( itemsHead, nToDiscard, cid );
@@ -422,7 +414,7 @@ _Bool isValidPID( const char* pid ){
 	}
 
 	if( isupper( pid[ 0 ] ) ){
-		for( size_t i = 1; i < PID_MAX_SIZE - 1; ++i ){
+		for( unsigned char i = 1; i < PID_MAX_SIZE - 1; ++i ){
 			if( !isdigit( pid[ i ] ) ){
 				// ERROR? must be all digits after uppercase letter
 				return 0;
@@ -446,13 +438,12 @@ _Bool isValidPID( const char* pid ){
 * @return ------------------> Int that was converted from char*.
 *
 */
-int getValidItemsNum( const char* num ){
+char getValidItemsNum( const char* num ){
 	if( num == NULL ){
 		return -1;
 	}
 
-	long int number = 0;
-	number = strtoul( num, NULL, 10 );
+	long int number = strtoul( num, NULL, 10 );
 	if( number < ITEM_NUMS_MIN_SIZE || number > ITEM_NUMS_MAX_SIZE ){
 		return -1;
 	}
@@ -474,12 +465,12 @@ int getValidItemsNum( const char* num ){
 * @return ------------------> Int that is size to trim token to.
 *
 */
-int getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString ){
+unsigned char getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString ){
 	if( token == NULL ){
 		return 0;
 	}
 
-	int lastCharIndex = maxCharsInString - 2;
+	unsigned char lastCharIndex = maxCharsInString - 2;
 
 	while( token[ lastCharIndex ] == ' ' ){
 		--lastCharIndex;

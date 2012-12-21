@@ -16,6 +16,8 @@
 #include "SanitizeInput.h"
 #include "LinkedDataNodeOperations.h"
 
+FILE* g_InputFile = NULL; 
+
 int main( int argc, char *argv[] ){
 
 	// User must supply patron_file and item_file
@@ -43,9 +45,14 @@ int main( int argc, char *argv[] ){
 	ListNode* patronsHead = NULL;
 	ListNode* itemsHead = NULL;
 
-	processInput(&itemsHead, &patronsHead, &initialPatronsFile );
-	processInput(&itemsHead, &patronsHead, &initialItemsFile );
-	processInput(&itemsHead, &patronsHead, NULL );
+	g_InputFile = initialPatronsFile;
+	processInput(&itemsHead, &patronsHead );
+
+	g_InputFile = initialItemsFile;
+	processInput(&itemsHead, &patronsHead );
+
+	g_InputFile = NULL;
+	processInput(&itemsHead, &patronsHead );
 
 	fclose( initialPatronsFile );
 	fclose( initialItemsFile );

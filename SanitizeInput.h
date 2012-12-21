@@ -16,7 +16,7 @@
 
 // Main input processing function calls all others
 // based on the first command token
-void processInput( ListNode** itemsHead, ListNode** patronsHead, FILE** inputFile );
+void processInput( ListNode** itemsHead, ListNode** patronsHead );
 
 // All of these process the specific command and continue 
 // parsing tokens from where processInput left off after the 1st command token
@@ -30,6 +30,6 @@ void processReturnCommand( ListNode** itemsHead, ListNode** patronshead );
 
 _Bool isValidCID( const char* cid );
 _Bool isValidPID( const char* pid );
-int getValidItemsNum( const char* num );
-int getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
+char getValidItemsNum( const char* num );
+unsigned char getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
 #endif
