@@ -22,7 +22,7 @@ _Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem );
 
 // Functions to delete nodes from list of ListNodes
 _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) );
-_Bool deleteAndFreeList( ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) );
+void deleteAndFreeBothLists( );
 
 // These are passed into delete node functions as function pointers
 // to insure proper clean up based on what the nodes void* data represents

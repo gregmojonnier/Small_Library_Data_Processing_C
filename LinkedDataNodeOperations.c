@@ -13,6 +13,8 @@
 #include <string.h>
 #include "AllConstants.h"
 
+extern ListNode* g_ItemsHead;
+extern ListNode* g_PatronsHead;
 /*
 * insertNodeInOrder
 * ----------------------------------
@@ -257,7 +259,7 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoi
 }
 
 /*
-* deleteAndFreeList
+* deleteAndFreeBothLists
 * ----------------------------------
 *  
 * Frees the entire list, calling freeVoidDataFunction 
@@ -269,22 +271,13 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoi
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool deleteAndFreeList( ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) ){
+void deleteAndFreeBothLists(){
 
-	while( nodeToDelete != NULL ){
-		ListNode* next = nodeToDelete->next;
+	while( deleteNode( &g_PatronsHead, g_PatronsHead, freePatronDataStruct ) );
+	while( deleteNode( &g_ItemsHead, g_ItemsHead, freeItemDataStruct ) );
 
-		// if null then void* data is just a pointer
-		// so no special freeing is needed
-		if( freeVoidDataFunction != NULL ){
-			(*freeVoidDataFunction)(nodeToDelete->data);
-		}
-		unallocate( nodeToDelete );
-		nodeToDelete = next;
-	}
-
-	nodeToDelete = NULL;	
-	return 1;
+	g_PatronsHead = NULL;	
+	g_ItemsHead = NULL;	
 }
 
 
@@ -401,11 +394,8 @@ _Bool freePatronDataStruct( void* patron ){
 */
 ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) ){
 	
-	while( nodeToCheck != NULL && uid != NULL ){
+	while( nodeToCheck != NULL && uid != NULL && (!(*doesDataMatchUID)( uid, nodeToCheck->data ) ) ){
 
-		if( (*doesDataMatchUID)( uid, nodeToCheck->data ) ){
-			break;
-		}
 		nodeToCheck = nodeToCheck->next;
 	}
 	return nodeToCheck;
@@ -426,11 +416,10 @@ ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, _Bool(*doesDa
 */
 _Bool doesPatronMatchUID( const char* uid, void* data ){
 	PatronData* p = (PatronData*)data; 
-	if( uid == NULL || p == NULL ){
+	if( p == NULL ){
 		return 0;
 	}
-	unsigned short int rightPID = 0;
-	rightPID = strtoul( uid+1, NULL, 10 );
+	unsigned short int rightPID = strtoul( uid+1, NULL, 10 );
 
 	return( *uid == p->leftPID[0] && rightPID == p->rightPID);
 }
@@ -450,25 +439,22 @@ _Bool doesPatronMatchUID( const char* uid, void* data ){
 */
 _Bool doesItemMatchUID( const char* uid, void* data ){
 	ItemData* i = (ItemData*)data; 
-	if( uid == NULL || i == NULL ){
+	if( i == NULL ){
 		return 0;
 	}
 
 	char leftCIDBuffer[ CID_MIN_SIZE ];
 	char rightCIDBuffer[ CID_MIN_SIZE ];
 
-	size_t periodLocation = strcspn( uid, PERIOD_WORD_SEPARATOR );
+	unsigned char periodLocation = strcspn( uid, PERIOD_WORD_SEPARATOR );
 	
 	strncpy( leftCIDBuffer, uid, periodLocation );
 	leftCIDBuffer[ periodLocation ] = '\0';
 
 	strcpy( rightCIDBuffer, uid+periodLocation+1 );
 
-	unsigned short int leftCID = 0;
-	leftCID = strtoul( leftCIDBuffer, NULL, 10 );
-
-	unsigned short int rightCID = 0;
-	rightCID = strtoul( rightCIDBuffer, NULL, 10 );
+	unsigned short int leftCID = strtoul( leftCIDBuffer, NULL, 10 );
+	unsigned short int rightCID = strtoul( rightCIDBuffer, NULL, 10 );
 
 	return ( i->leftCID == leftCID && i->rightCID == rightCID );
 }
@@ -489,11 +475,7 @@ _Bool doesItemMatchUID( const char* uid, void* data ){
 */
 ListNode* findNodeWithData( ListNode* nodeToCheck, void* data ){
 
-	while( nodeToCheck != NULL ){
-
-		if( nodeToCheck->data == data ){
-			break;
-		}
+	while( nodeToCheck != NULL && nodeToCheck->data != data ){
 		nodeToCheck = nodeToCheck->next;
 	}
 	return nodeToCheck;

@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include "AllConstants.h"
 
+extern ListNode* g_PatronsHead;
+extern ListNode* g_ItemsHead;
 
 /*
 * getCopiesAvailable
@@ -23,19 +25,15 @@
 * Finds how many copies of an item with the specified CID
 * are available to be checked out.
 *
-* @itemsHead ---------------> List to find item in.
+* @g_ItemsHead ---------------> List to find item in.
 * @cid ---------------------> cid to match node from.
 *
 * @return ------------------> int which is the number of available copies.
 *
 */
-unsigned char getCopiesAvailable( ListNode* itemsHead, const char* cid ){
-	
-	if( itemsHead == NULL ){
-		return 0;
-	}
+unsigned char getCopiesAvailable( const char* cid ){
 
-	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;
@@ -57,21 +55,21 @@ unsigned char getCopiesAvailable( ListNode* itemsHead, const char* cid ){
 * inserted into the CID & PID's sublists.(patronsCurrentlyRenting, itemsCurrentlyRenting)
 *
 *
-* @itemsHead ---------------> List of items.
-* @patronsHead -------------> List of patrons.
+* @g_ItemsHead ---------------> List of items.
+* @g_PatronsHead -------------> List of patrons.
 * @pid ---------------------> pid who will be borrowing an item.
 * @cid ---------------------> cid of the item to borrow.
 *
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid, const char* cid ){
-	ListNode* patronNode = findNodeWithUID( *patronsHead, pid, doesPatronMatchUID );
+_Bool borrowItem( const char* pid, const char* cid ){
+	ListNode* patronNode = findNodeWithUID( g_PatronsHead, pid, doesPatronMatchUID );
 	if( patronNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", pid);
 		return 0;
 	}
-	ListNode* itemNode = findNodeWithUID( *itemsHead, cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, doesItemMatchUID );
 	
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
@@ -112,16 +110,16 @@ _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid,
 * The node is deleted if copies of an item reaches 0.
 *
 *
-* @itemsHead ---------------> List of items.
+* @g_ItemsHead ---------------> List of items.
 * @numToDelete  ------------> Number of copies of the item to delete.
 * @cid ---------------------> cid of the item to discard copies of.
 *
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool discardCopiesOfItem( ListNode** itemsHead, unsigned char numToDelete, const char* cid){
+_Bool discardCopiesOfItem( unsigned char numToDelete, const char* cid){
 
-	ListNode* itemNode = findNodeWithUID( *itemsHead, cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;
@@ -137,7 +135,7 @@ _Bool discardCopiesOfItem( ListNode** itemsHead, unsigned char numToDelete, cons
 	item->numCopies -= numToDelete;
 
 	if( item->numCopies == 0 ){
-		deleteNode( itemsHead, itemNode, freeItemDataStruct );
+		deleteNode( &g_ItemsHead, itemNode, freeItemDataStruct );
 	}
 	return 1;
 }
@@ -158,13 +156,10 @@ _Bool discardCopiesOfItem( ListNode** itemsHead, unsigned char numToDelete, cons
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool addItem( ListNode** head, unsigned char numCopies, const char* cid, const char* author, const char* title ){
-	if( head == NULL ){
-		return 0;
-	}
+_Bool addItem( unsigned char numCopies, const char* cid, const char* author, const char* title ){
 
 	ListNode* existingItemNode;
-	if( ( existingItemNode = findNodeWithUID( *head, cid, doesItemMatchUID ) ) != NULL ){
+	if( ( existingItemNode = findNodeWithUID( g_ItemsHead, cid, doesItemMatchUID ) ) != NULL ){
 		ItemData* existingItem = (ItemData*)existingItemNode->data;
 		fprintf( stderr, "Item %s (%s/%s) already associated with (%s/%s)\n", cid, author, title, existingItem->author, existingItem->title ); 
 		return 0;
@@ -191,29 +186,26 @@ _Bool addItem( ListNode** head, unsigned char numCopies, const char* cid, const 
 		return 0;
 	}
 
-	char leftCIDBuffer[ CID_MIN_SIZE ];
-	char rightCIDBuffer[ CID_MIN_SIZE ];
+	char cidBuffer[ CID_MIN_SIZE ];
 
 	unsigned char periodLocation = strcspn( cid, PERIOD_WORD_SEPARATOR ); 
 	
-	strncpy( leftCIDBuffer, cid, periodLocation );
-	leftCIDBuffer[ periodLocation ] = '\0';
+	strncpy( cidBuffer, cid, periodLocation );
+	cidBuffer[ periodLocation ] = '\0';
+	unsigned short int cidNum = strtoul( cidBuffer, NULL, 10 );
+	i->leftCID = cidNum;
 
-	strcpy( rightCIDBuffer, cid+periodLocation+1 );
-
-	unsigned short int leftCID = strtoul( leftCIDBuffer, NULL, 10 );
-
-	unsigned short int rightCID = strtoul( rightCIDBuffer, NULL, 10 );
+	strcpy( cidBuffer, cid+periodLocation+1 );
+	cidNum = strtoul( cidBuffer, NULL, 10 );
+	i->rightCID = cidNum;
 
 	i->numCopies = numCopies;
 	i->patronsCurrentlyRenting = NULL;
-	i->leftCID = leftCID;
-	i->rightCID = rightCID;
 
 	strcpy( i->author, author );
 	strcpy( i->title, title );
 	
-	if( !insertNodeInOrder( head, (void*)i, newItemHasLowerPrecedence ) ){
+	if( !insertNodeInOrder( &g_ItemsHead, i, newItemHasLowerPrecedence ) ){
 		return 0;
 	}
 	return 1;
@@ -227,15 +219,15 @@ _Bool addItem( ListNode** head, unsigned char numCopies, const char* cid, const 
 * specified by cid currently checked out.
 *
 *
-* @itemsHead ---------------> List of items.
+* @g_ItemsHead ---------------> List of items.
 * @cid ---------------------> cid who we want to know which patrons have out.
 *
 * @return ------------------> none.
 *
 */
-void patronsWithItemOut( ListNode* itemsHead, const char* cid ){
+void patronsWithItemOut( const char* cid ){
 
-	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, doesItemMatchUID );
 	
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );		
@@ -253,26 +245,22 @@ void patronsWithItemOut( ListNode* itemsHead, const char* cid ){
 * out by the patron specified by pid.
 *
 *
-* @patronsHead -------------> List of patrons.
+* @g_PatronsHead -------------> List of patrons.
 * @pid ---------------------> pid who we want to know which items has checked out.
 *
 * @return ------------------> none.
 *
 */
-void itemsOutByPatron( ListNode* patronsHead, const char* pid ){
+void itemsOutByPatron( const char* pid ){
 
-	ListNode* patronNode = findNodeWithUID( patronsHead, pid, doesPatronMatchUID );
+	ListNode* patronNode = findNodeWithUID( g_PatronsHead, pid, doesPatronMatchUID );
 	
 	if( patronNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", pid );		
 		return;
 	}
 
-	PatronData* patron = (PatronData*) patronNode->data;
-
-
-	printPatronStatus( patron );
-
+	printPatronStatus( (PatronData*) patronNode->data );
 }
 
 /*
@@ -284,23 +272,23 @@ void itemsOutByPatron( ListNode* patronsHead, const char* pid ){
 * removed from the CID & PID's sublists.(patronsCurrentlyRenting, itemsCurrentlyRenting)
 *
 *
-* @itemsHead ---------------> List of items.
-* @patronsHead -------------> List of patrons.
+* @g_ItemsHead ---------------> List of items.
+* @g_PatronsHead -------------> List of patrons.
 * @pid ---------------------> pid who will be returning an item.
 * @cid ---------------------> cid of the item to return.
 *
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char* pid, const char* cid ){
+_Bool returnPatronsItem( const char* pid, const char* cid ){
 
-	ListNode* patronNode = findNodeWithUID( patronsHead, pid, doesPatronMatchUID );
+	ListNode* patronNode = findNodeWithUID( g_PatronsHead, pid, doesPatronMatchUID );
 	if( patronNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", pid );
 		return 0;
 	}
 
-	ListNode* itemNode = findNodeWithUID( itemsHead, cid, doesItemMatchUID );
+	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
 		return 0;
@@ -336,13 +324,10 @@ _Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char*
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool addPatron( ListNode** head, const char* pid, const char* name ){
-	if( head == NULL ){
-		return 0;
-	}
+_Bool addPatron( const char* pid, const char* name ){
 
 	ListNode* existingPatron;
-	if( ( existingPatron = findNodeWithUID( *head, pid, doesPatronMatchUID ) ) != NULL ){
+	if( ( existingPatron = findNodeWithUID( g_PatronsHead, pid, doesPatronMatchUID ) ) != NULL ){
 		fprintf( stderr, "Patron %s (%s) already associated with (%s)\n", pid, name, ((PatronData*)existingPatron->data)->name );
 		return 0;
 	}
@@ -362,15 +347,14 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 	}
 
 	strcpy( p->name, name );
-	strncpy( p->leftPID, pid, 1 );
+	p->leftPID[ 0 ] = *pid;
 	p->leftPID[ 1 ] = '\0';
 
-	unsigned short int rightPID = strtoul( pid+1, NULL, 10 );
+	p->rightPID = strtoul( pid+1, NULL, 10 );
 
-	p->rightPID = rightPID;
 	p->itemsCurrentlyRenting = NULL;
 
-	if( !insertNodeInOrder( head, (void*)p, newPatronHasLowerPrecedence ) ){
+	if( !insertNodeInOrder( &g_PatronsHead, p, newPatronHasLowerPrecedence ) ){
 		return 0;
 	}
 	return 1;
@@ -383,16 +367,16 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 * Loops through entire Item linked list and calls
 * printItemStatus() on the ItemData.
 *
-* @itemsHead ---------------> Item list to print out.
+* @g_ItemsHead ---------------> Item list to print out.
 *
 * @return ------------------> None.
 *
 */
-void printAllItemsStatus( ListNode* itemToPrint ){
+void printAllItemsStatus(){
 
+	ListNode* itemToPrint = g_ItemsHead;
 	while( itemToPrint != NULL ){
-		ItemData* itemData = (ItemData*)itemToPrint->data; 
-		printItemStatus( itemData );
+		printItemStatus( (ItemData*) itemToPrint->data );
 		itemToPrint = itemToPrint->next;
 		printf("\n");
 	}
@@ -405,16 +389,16 @@ void printAllItemsStatus( ListNode* itemToPrint ){
 * Loops through entire Patron linked list and calls
 * printPatronStatus() on the ItemData.
 *
-* @patronsHead ---------------> Patron list to print out.
+* @g_PatronsHead ---------------> Patron list to print out.
 *
 * @return ------------------> None.
 *
 */
-void printAllPatronsStatus( ListNode* patronToPrint ){
+void printAllPatronsStatus(){
 
+	ListNode* patronToPrint = g_PatronsHead;
 	while( patronToPrint != NULL ){
-		PatronData* patronData = (PatronData*) patronToPrint->data;
-		printPatronStatus( patronData );
+		printPatronStatus( (PatronData*) patronToPrint->data );
 		patronToPrint = patronToPrint->next;
 		if( patronToPrint != NULL ){
 			printf("\n");

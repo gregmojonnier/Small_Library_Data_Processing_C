@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <allocate.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "AllConstants.h"
 
 extern FILE* g_InputFile;
@@ -37,7 +38,7 @@ extern FILE* g_InputFile;
 * @return ------------------> None.
 *
 */
-void processInput( ListNode** itemsHead, ListNode** patronsHead ){
+void processInput(){
 
 	char fullLine[ LINE_MAX_SIZE ];
 
@@ -49,33 +50,33 @@ void processInput( ListNode** itemsHead, ListNode** patronsHead ){
 		if( parsedCommand != NULL ){
 			
 			if( strcmp( parsedCommand, ADD_PATRON_COMMAND ) == 0 ){
-				processPatronCommand( patronsHead );
+				processPatronCommand();
 			}
 			else if( strcmp( parsedCommand, ADD_ITEM_COMMAND ) == 0 ){
-				processItemCommand( itemsHead );
+				processItemCommand();
 			}
 			else if( strcmp( parsedCommand, BORROW_ITEM_COMMAND ) == 0 ){
-				processBorrowCommand( itemsHead, patronsHead );
+				processBorrowCommand();
 			}
 			else if( strcmp( parsedCommand, RETURN_ITEM_COMMAND ) == 0 ){
-				processReturnCommand( itemsHead, patronsHead );
+				processReturnCommand();
 			}
 			else if( strcmp( parsedCommand, DISCARD_ITEM_COMMAND ) == 0 ){
-				processDiscardCommand( itemsHead );
+				processDiscardCommand();
 			}
 			else if( strcmp( parsedCommand, OUT_COMMAND ) == 0 ){
-				processOutCommand( itemsHead, patronsHead );
+				processOutCommand();
 			}
 			else if( strcmp( parsedCommand, AVAILABLE_ITEM_COMMAND ) == 0 ){
-				processAvailableCommand( itemsHead );
+				processAvailableCommand();
 			}
 		}
 	}
 	if( g_InputFile == NULL ){
 		// if using stdin then we need to print finising statuses of everything
 		printf("\n");
-		printAllItemsStatus( *itemsHead );
-		printAllPatronsStatus( *patronsHead );
+		printAllItemsStatus( );
+		printAllPatronsStatus( );
 	}
 }
 
@@ -91,7 +92,7 @@ void processInput( ListNode** itemsHead, ListNode** patronsHead ){
 * @return ------------------> None.
 *
 */
-void processPatronCommand( ListNode** patronsHead ){
+void processPatronCommand(){
 
 	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	char pid[ PID_MAX_SIZE ];
@@ -128,7 +129,7 @@ void processPatronCommand( ListNode** patronsHead ){
 	}
 
 	if( pid != NULL && truncatedName != NULL ){
-		addPatron( patronsHead, pid, truncatedName );
+		addPatron( pid, truncatedName );
 	}
 }
 
@@ -144,7 +145,7 @@ void processPatronCommand( ListNode** patronsHead ){
 * @return ------------------> None.
 *
 */
-void processItemCommand( ListNode** itemsHead ){
+void processItemCommand(){
 
 // item numCopies CID "author" "title"
 	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
@@ -216,7 +217,7 @@ void processItemCommand( ListNode** itemsHead ){
 	}
 
 	if( cid != NULL && truncatedAuthor != NULL && truncatedTitle != NULL ){
-		addItem( itemsHead, numCopies, cid, truncatedAuthor, truncatedTitle );
+		addItem( numCopies, cid, truncatedAuthor, truncatedTitle );
 	}
 }
 
@@ -233,12 +234,12 @@ void processItemCommand( ListNode** itemsHead ){
 * @return ------------------> None.
 *
 */
-void processAvailableCommand( ListNode** itemsHead ){
+void processAvailableCommand(){
 
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	
 	if( cid != NULL && isValidCID( cid ) ){
-		getCopiesAvailable( *itemsHead, cid );
+		getCopiesAvailable( cid );
 	}
 }
 
@@ -256,13 +257,13 @@ void processAvailableCommand( ListNode** itemsHead ){
 * @return ------------------> None.
 *
 */
-void processBorrowCommand( ListNode** itemsHead, ListNode** patronsHead ){
+void processBorrowCommand(){
 	
 	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
 	if( pid != NULL && cid != NULL && isValidPID( pid ) && isValidCID( cid ) ){
-		borrowItem( itemsHead, patronsHead, pid, cid );	
+		borrowItem( pid, cid );	
 	}
 }
 
@@ -279,7 +280,7 @@ void processBorrowCommand( ListNode** itemsHead, ListNode** patronsHead ){
 *
 */
 // discard n cid
-void processDiscardCommand( ListNode** itemsHead ){
+void processDiscardCommand(){
 
 	const char* numToDiscard = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
@@ -288,7 +289,7 @@ void processDiscardCommand( ListNode** itemsHead ){
 		unsigned char nToDiscard = getValidItemsNum( numToDiscard );
 
 		if( nToDiscard >= 0 && isValidCID( cid ) ){
-			discardCopiesOfItem( itemsHead, nToDiscard, cid );
+			discardCopiesOfItem( nToDiscard, cid );
 		}
 	}
 }
@@ -307,16 +308,16 @@ void processDiscardCommand( ListNode** itemsHead ){
 * @return ------------------> None.
 *
 */
-void processOutCommand( ListNode** itemsHead, ListNode** patronsHead ){
+void processOutCommand(){
 
 	const char* uid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
 	if( uid != NULL ){
 		if( isValidCID( uid ) ){
-			patronsWithItemOut( *itemsHead, uid );
+			patronsWithItemOut( uid );
 		}
 		else if( isValidPID( uid ) ){
-			itemsOutByPatron( *patronsHead, uid );
+			itemsOutByPatron( uid );
 		}
 	}
 }
@@ -334,13 +335,13 @@ void processOutCommand( ListNode** itemsHead, ListNode** patronsHead ){
 * @return ------------------> None.
 *
 */
-void processReturnCommand( ListNode** itemsHead, ListNode** patronsHead ){
+void processReturnCommand(){
 
 	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
 
 	if( pid != NULL && cid != NULL && isValidPID( pid ) && isValidCID ){
-		returnPatronsItem( *itemsHead, *patronsHead, pid, cid );
+		returnPatronsItem( pid, cid );
 	}
 }
 

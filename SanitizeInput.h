@@ -11,22 +11,19 @@
 * @author Greg Mojonnier
 */
 
-#include "LinkedDataNodeStructures.h"
-#include <stdio.h>
-
 // Main input processing function calls all others
 // based on the first command token
-void processInput( ListNode** itemsHead, ListNode** patronsHead );
+void processInput( );
 
 // All of these process the specific command and continue 
 // parsing tokens from where processInput left off after the 1st command token
-void processPatronCommand( ListNode** patronsHead );
-void processItemCommand( ListNode** itemsHead );
-void processAvailableCommand( ListNode** itemsHead );
-void processBorrowCommand( ListNode** itemsHead, ListNode** patronsHead );
-void processDiscardCommand( ListNode** itemsHead );
-void processOutCommand( ListNode** itemsHead, ListNode** patronsHead );
-void processReturnCommand( ListNode** itemsHead, ListNode** patronshead );
+void processPatronCommand();
+void processItemCommand();
+void processAvailableCommand();
+void processBorrowCommand();
+void processDiscardCommand();
+void processOutCommand();
+void processReturnCommand();
 
 _Bool isValidCID( const char* cid );
 _Bool isValidPID( const char* pid );

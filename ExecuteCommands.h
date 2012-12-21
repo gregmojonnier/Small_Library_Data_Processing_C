@@ -12,16 +12,16 @@
 
 #include "LinkedDataNodeStructures.h"
 
-unsigned char getCopiesAvailable( ListNode* itemsHead, const char* cid );
-_Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid, const char* cid );
-_Bool discardCopiesOfItem( ListNode** itemsHead, unsigned char numToDelete, const char* cid);
-_Bool addItem( ListNode** head, unsigned char numCopies, const char* cid, const char* author, const char* title );
-void patronsWithItemOut( ListNode* itemsHead, const char* cid );
-void itemsOutByPatron( ListNode* patronsHead, const char* pid );
-_Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char* pid, const char* cid );
-_Bool addPatron( ListNode** head, const char* pid, const char* name );
-void printAllItemsStatus( ListNode* itemToPrint );
-void printAllPatronsStatus( ListNode* patronToPrint );
+unsigned char getCopiesAvailable( const char* cid );
+_Bool borrowItem( const char* pid, const char* cid );
+_Bool discardCopiesOfItem( unsigned char numToDelete, const char* cid);
+_Bool addItem( unsigned char numCopies, const char* cid, const char* author, const char* title );
+void patronsWithItemOut( const char* cid );
+void itemsOutByPatron( const char* pid );
+_Bool returnPatronsItem( const char* pid, const char* cid );
+_Bool addPatron( const char* pid, const char* name );
+void printAllItemsStatus( );
+void printAllPatronsStatus( );
 void printItemStatus( ItemData* item );
 void printPatronStatus( PatronData* patron );
 #endif

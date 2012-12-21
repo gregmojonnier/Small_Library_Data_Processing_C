@@ -11,12 +11,13 @@
 *
 */
 #include <stdio.h>
-#include <stdlib.h>
 #include <allocate.h>
 #include "SanitizeInput.h"
 #include "LinkedDataNodeOperations.h"
 
 FILE* g_InputFile = NULL; 
+ListNode* g_PatronsHead = NULL;
+ListNode* g_ItemsHead = NULL;
 
 int main( int argc, char *argv[] ){
 
@@ -46,19 +47,18 @@ int main( int argc, char *argv[] ){
 	ListNode* itemsHead = NULL;
 
 	g_InputFile = initialPatronsFile;
-	processInput(&itemsHead, &patronsHead );
+	processInput();
 
 	g_InputFile = initialItemsFile;
-	processInput(&itemsHead, &patronsHead );
+	processInput();
 
 	g_InputFile = NULL;
-	processInput(&itemsHead, &patronsHead );
+	processInput();
 
 	fclose( initialPatronsFile );
 	fclose( initialItemsFile );
 
-	deleteAndFreeList( patronsHead, freePatronDataStruct );
-	deleteAndFreeList( itemsHead, freeItemDataStruct );
+	deleteAndFreeBothLists();
 
 	return( EXIT_SUCCESS );
 }
