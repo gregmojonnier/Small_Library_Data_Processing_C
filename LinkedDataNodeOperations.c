@@ -106,7 +106,7 @@ _Bool newPatronHasLowerPrecedence( void* _newPatron, void* _currentPatron ){
 	PatronData* currentPatron = (PatronData*)_currentPatron;
 
 	if( newPatron != NULL && currentPatron != NULL){
-		int namePrecedence = strcmp( newPatron->name, currentPatron->name );
+		char namePrecedence = strcmp( newPatron->name, currentPatron->name );
 
 
 		if( namePrecedence == 0 ){
@@ -151,11 +151,11 @@ _Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem ){
 	ItemData* currentItem = (ItemData*)_currentItem;
 
 	if( newItem != NULL && currentItem != NULL ){
-		int authorPrecedence = strcmp( newItem->author, currentItem->author );
+		char authorPrecedence = strcmp( newItem->author, currentItem->author );
 
 		if( authorPrecedence == 0 ){
 			// item title
-			int titlePrecedence = strcmp( newItem->title, currentItem->title );
+			char titlePrecedence = strcmp( newItem->title, currentItem->title );
 			
 			if( titlePrecedence == 0 ){
 				// cid
@@ -269,17 +269,10 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoi
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool deleteAndFreeList( ListNode* currentHead, _Bool(*freeVoidDataFunction)(void* data) ){
+_Bool deleteAndFreeList( ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) ){
 
-	if( currentHead == NULL ){
-	// empty list
-		return 1;
-	}	
-
-	ListNode* nodeToDelete = currentHead;
 	while( nodeToDelete != NULL ){
 		ListNode* next = nodeToDelete->next;
-		// check result of this?
 
 		// if null then void* data is just a pointer
 		// so no special freeing is needed
@@ -290,7 +283,7 @@ _Bool deleteAndFreeList( ListNode* currentHead, _Bool(*freeVoidDataFunction)(voi
 		nodeToDelete = next;
 	}
 
-	currentHead = NULL;	
+	nodeToDelete = NULL;	
 	return 1;
 }
 
@@ -406,14 +399,9 @@ _Bool freePatronDataStruct( void* patron ){
 * @return ------------------> Pointer to node matching UID, or NULL.
 *
 */
-ListNode* findNodeWithUID( ListNode* currentHead, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) ){
-	if( currentHead == NULL || uid == NULL ){
-		return NULL;
-	}
+ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) ){
 	
-	ListNode* nodeToCheck = currentHead;
-
-	while( nodeToCheck != NULL ){
+	while( nodeToCheck != NULL && uid != NULL ){
 
 		if( (*doesDataMatchUID)( uid, nodeToCheck->data ) ){
 			break;
@@ -441,7 +429,7 @@ _Bool doesPatronMatchUID( const char* uid, void* data ){
 	if( uid == NULL || p == NULL ){
 		return 0;
 	}
-	long int rightPID = 0;
+	unsigned short int rightPID = 0;
 	rightPID = strtoul( uid+1, NULL, 10 );
 
 	return( *uid == p->leftPID[0] && rightPID == p->rightPID);
@@ -476,10 +464,10 @@ _Bool doesItemMatchUID( const char* uid, void* data ){
 
 	strcpy( rightCIDBuffer, uid+periodLocation+1 );
 
-	long int leftCID = 0;
+	unsigned short int leftCID = 0;
 	leftCID = strtoul( leftCIDBuffer, NULL, 10 );
 
-	long int rightCID = 0;
+	unsigned short int rightCID = 0;
 	rightCID = strtoul( rightCIDBuffer, NULL, 10 );
 
 	return ( i->leftCID == leftCID && i->rightCID == rightCID );
@@ -499,13 +487,7 @@ _Bool doesItemMatchUID( const char* uid, void* data ){
 * @return ------------------> Pointer to node matching data, or NULL.
 *
 */
-ListNode* findNodeWithData( ListNode* currentHead, void* data ){
-
-	if( currentHead == NULL ){
-		return NULL;
-	}
-	
-	ListNode* nodeToCheck = currentHead;
+ListNode* findNodeWithData( ListNode* nodeToCheck, void* data ){
 
 	while( nodeToCheck != NULL ){
 
@@ -528,10 +510,9 @@ ListNode* findNodeWithData( ListNode* currentHead, void* data ){
 * @return ------------------> int indicating a list's size.
 *
 */
-int getListSize( ListNode* head ){
+unsigned char getListSize( ListNode* currentNode ){
 
-	ListNode* currentNode = head;
-	int size = 0;
+	unsigned char size = 0;
 
 	while( currentNode != NULL ){
 		++size;

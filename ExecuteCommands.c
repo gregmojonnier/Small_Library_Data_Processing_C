@@ -29,7 +29,7 @@
 * @return ------------------> int which is the number of available copies.
 *
 */
-int getCopiesAvailable( ListNode* itemsHead, const char* cid ){
+unsigned char getCopiesAvailable( ListNode* itemsHead, const char* cid ){
 	
 	if( itemsHead == NULL ){
 		return 0;
@@ -42,8 +42,7 @@ int getCopiesAvailable( ListNode* itemsHead, const char* cid ){
 	}	
 	
 	ItemData* item = (ItemData*)itemNode->data;
-	ListNode* patronsRenting = item->patronsCurrentlyRenting;
-	int copiesAvailable = item->numCopies - getListSize( patronsRenting );
+	unsigned char copiesAvailable = item->numCopies - getListSize( item->patronsCurrentlyRenting );
 
 	printf("Item %s (%s/%s): %i of %i copies available\n", cid, item->author, item->title, copiesAvailable, item->numCopies );
 	return copiesAvailable;
@@ -120,7 +119,7 @@ _Bool borrowItem( ListNode** itemsHead, ListNode** patronsHead, const char* pid,
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool discardCopiesOfItem( ListNode** itemsHead, short int numToDelete, const char* cid){
+_Bool discardCopiesOfItem( ListNode** itemsHead, unsigned char numToDelete, const char* cid){
 
 	ListNode* itemNode = findNodeWithUID( *itemsHead, cid, doesItemMatchUID );
 	if( itemNode == NULL ){
@@ -159,7 +158,7 @@ _Bool discardCopiesOfItem( ListNode** itemsHead, short int numToDelete, const ch
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool addItem( ListNode** head, int numCopies, const char* cid, const char* author, const char* title ){
+_Bool addItem( ListNode** head, unsigned char numCopies, const char* cid, const char* author, const char* title ){
 	if( head == NULL ){
 		return 0;
 	}
@@ -195,18 +194,16 @@ _Bool addItem( ListNode** head, int numCopies, const char* cid, const char* auth
 	char leftCIDBuffer[ CID_MIN_SIZE ];
 	char rightCIDBuffer[ CID_MIN_SIZE ];
 
-	size_t periodLocation = strcspn( cid, PERIOD_WORD_SEPARATOR ); 
+	unsigned char periodLocation = strcspn( cid, PERIOD_WORD_SEPARATOR ); 
 	
 	strncpy( leftCIDBuffer, cid, periodLocation );
 	leftCIDBuffer[ periodLocation ] = '\0';
 
 	strcpy( rightCIDBuffer, cid+periodLocation+1 );
 
-	long int leftCID = 0;
-	leftCID = strtoul( leftCIDBuffer, NULL, 10 );
+	unsigned short int leftCID = strtoul( leftCIDBuffer, NULL, 10 );
 
-	long int rightCID = 0;
-	rightCID = strtoul( rightCIDBuffer, NULL, 10 );
+	unsigned short int rightCID = strtoul( rightCIDBuffer, NULL, 10 );
 
 	i->numCopies = numCopies;
 	i->patronsCurrentlyRenting = NULL;
@@ -245,9 +242,7 @@ void patronsWithItemOut( ListNode* itemsHead, const char* cid ){
 		return ;
 	}
 
-	ItemData* item = (ItemData*) itemNode->data;
-
-	printItemStatus( item );
+	printItemStatus( (ItemData*) itemNode->data );
 }
 
 /*
@@ -311,12 +306,8 @@ _Bool returnPatronsItem( ListNode* itemsHead, ListNode* patronsHead, const char*
 		return 0;
 	}
 
-
-
 	PatronData* patron = (PatronData*)patronNode->data;
 	ItemData* item = (ItemData*)itemNode->data;
-
-
 
 	ListNode* itemPtrToDelete = findNodeWithData( patron->itemsCurrentlyRenting, itemNode );
 
@@ -374,11 +365,9 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 	strncpy( p->leftPID, pid, 1 );
 	p->leftPID[ 1 ] = '\0';
 
-	long int rightPID = 0;
-	rightPID = strtoul( pid+1, NULL, 10 );
+	unsigned short int rightPID = strtoul( pid+1, NULL, 10 );
 
 	p->rightPID = rightPID;
-
 	p->itemsCurrentlyRenting = NULL;
 
 	if( !insertNodeInOrder( head, (void*)p, newPatronHasLowerPrecedence ) ){
@@ -399,13 +388,10 @@ _Bool addPatron( ListNode** head, const char* pid, const char* name ){
 * @return ------------------> None.
 *
 */
-void printAllItemsStatus( ListNode* itemsHead ){
-
-	ListNode* itemToPrint = itemsHead;
+void printAllItemsStatus( ListNode* itemToPrint ){
 
 	while( itemToPrint != NULL ){
-		void* _itemData = itemToPrint->data;
-		ItemData* itemData = (ItemData*) _itemData;
+		ItemData* itemData = (ItemData*)itemToPrint->data; 
 		printItemStatus( itemData );
 		itemToPrint = itemToPrint->next;
 		printf("\n");
@@ -424,13 +410,10 @@ void printAllItemsStatus( ListNode* itemsHead ){
 * @return ------------------> None.
 *
 */
-void printAllPatronsStatus( ListNode* patronsHead ){
-
-	ListNode* patronToPrint = patronsHead;
+void printAllPatronsStatus( ListNode* patronToPrint ){
 
 	while( patronToPrint != NULL ){
-		void* _patronData = patronToPrint->data;
-		PatronData* patronData = (PatronData*) _patronData;
+		PatronData* patronData = (PatronData*) patronToPrint->data;
 		printPatronStatus( patronData );
 		patronToPrint = patronToPrint->next;
 		if( patronToPrint != NULL ){
@@ -467,8 +450,7 @@ void printItemStatus( ItemData* item ){
 		printf( "Item %s (%s/%s) is checked out to:\n", fullCID, item->author, item->title );
 
 		while( patronsCurrentlyRenting != NULL ){
-			ListNode* patronNode = (ListNode*)patronsCurrentlyRenting->data;
-			PatronData* p = (PatronData*) patronNode->data;
+			PatronData* p = (PatronData*) ((ListNode*)patronsCurrentlyRenting->data)->data;
 			if( p != NULL ){
 				char fullPID[ PID_MAX_SIZE ];
 				sprintf( fullPID, "%s%04i", p->leftPID, p->rightPID );
@@ -505,8 +487,7 @@ void printPatronStatus( PatronData* patron ){
 		printf( "Patron %s (%s) has these items checked out:\n", fullPID, patron->name );
 
 		while( itemsCurrentlyRenting != NULL ){
-			ListNode* itemNode = (ListNode*)itemsCurrentlyRenting->data;
-			ItemData* i = (ItemData*) itemNode->data;
+			ItemData* i = (ItemData*)((ListNode*)itemsCurrentlyRenting->data)->data;
 
 			if( i != NULL ){
 				char fullCID[ CID_MAX_SIZE ];
