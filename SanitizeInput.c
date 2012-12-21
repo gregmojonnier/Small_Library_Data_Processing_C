@@ -26,14 +26,10 @@ extern FILE* g_InputFile;
 *  
 * Entry point for input processing. This will
 * loop through line by line of the input source.
-* If fileName is NULL we use STDIN, other wise the 
+* If g_InputFile is NULL we use STDIN, other wise the 
 * file specified is the input source. For each line
-* this function will call a Processing function for
-* the appropriate command.
+* this function will appropriately Processing the command.
 *
-* @itemsHead ---------------> Item's list to construct from input commands.
-* @patronsHead -------------> Patron's list to construct from input commands.
-* @inputFile ---------------> File of input source, if NULL then use STDIN.
 *
 * @return ------------------> None.
 *
@@ -44,6 +40,7 @@ void processInput(){
 
 	// get each line until end of file
 	while( fgets( fullLine, LINE_MAX_SIZE, ( ( g_InputFile == NULL ) ? stdin : g_InputFile ) ) != NULL ){
+
 		// parse first word of line based on word separators
 		char* parsedCommand = strtok( fullLine, DEFAULT_WORD_SEPARATORS );;
 
@@ -113,7 +110,6 @@ void processInput(){
 * Processes patron command input line and 
 * calls addPatron function to create a new patron data.
 *
-* @patronsHead -------------> Patron's list to add new patron to.
 *
 * @return ------------------> None.
 *
@@ -166,14 +162,12 @@ void processPatronCommand(){
 * Processes item command input line and 
 * calls addItem function to create a new item data.
 *
-* @itemsHead -------==------> Item's list to add new item to.
 *
 * @return ------------------> None.
 *
 */
 void processItemCommand(){
 
-// item numCopies CID "author" "title"
 	const char* token = strtok( 0, DEFAULT_WORD_SEPARATORS );
 	char cid[ CID_MAX_SIZE ];
 	char truncatedAuthor[ AUTHOR_MAX_SIZE ];
@@ -186,6 +180,7 @@ void processItemCommand(){
 		switch( tokensProcessed ){
 			case 0:
 			  {
+			  	// number of copies
 				numCopies = strtoul( token, NULL, 10 );
 				if(!(numCopies >= ITEM_NUMS_MIN_SIZE && numCopies <= ITEM_NUMS_MAX_SIZE) ){
 					return;
@@ -214,6 +209,7 @@ void processItemCommand(){
 			  }
 			case 3:
 			  {
+			  	// author
 				uint_least8_t authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
 				
 				strncpy( truncatedAuthor, token, authorLength -1 );
@@ -235,8 +231,8 @@ void processItemCommand(){
 			default:
 			  {
 				token = strtok( 0, QUOTE_WORD_SEPARATOR );
-			  }
 				break;
+			  }
 		}
 	}
 
@@ -254,7 +250,7 @@ void processItemCommand(){
 *
 * @cid -------------==------> Char* to be checked.
 *
-* @return ------------------> _Bool indicating CID validity.
+* @return ------------------> uint_least8_t(1 or 0) indicating CID validity.
 *
 */
 uint_least8_t isValidCID( const char* cid ){
@@ -265,16 +261,13 @@ uint_least8_t isValidCID( const char* cid ){
 
 	const char* periodLocationIterator = strchr( cid, PERIOD_WORD_SEPARATOR_CH );
 	if( periodLocationIterator == NULL ){
-		// Error needs period?
 		return 0;
 	}
-
 
 	const char* cidIt = cid;
 
 	while( cidIt != periodLocationIterator ){
 		if( !isdigit( *cidIt ) ){	
-			// not digits before error?
 			return 0;
 		}
 		++cidIt;
@@ -284,7 +277,6 @@ uint_least8_t isValidCID( const char* cid ){
 
 	while( cidIt != &cid[ strlen( cid ) ]  ){
 		if( !isdigit( *cidIt ) && *cidIt != '.' ){	
-			// not digits before error?
 			return 0;
 		}
 		++cidIt;
@@ -300,7 +292,7 @@ uint_least8_t isValidCID( const char* cid ){
 *
 * @pid -------------==------> Char* to be checked.
 *
-* @return ------------------> _Bool indicating PID validity.
+* @return ------------------> uint_least8_t(1 or 0) indicating PID validity.
 *
 */
 uint_least8_t isValidPID( const char* pid ){
@@ -308,7 +300,6 @@ uint_least8_t isValidPID( const char* pid ){
 	if( pid != NULL && isupper( pid[ 0 ] ) ){
 		for( uint_least8_t i = 1; i < PID_MAX_SIZE - 1; ++i ){
 			if( !isdigit( pid[ i ] ) ){
-				// ERROR? must be all digits after uppercase letter
 				return 0;
 			}
 		}
@@ -330,7 +321,7 @@ uint_least8_t isValidPID( const char* pid ){
 * @token -----------==------> Char* to find size to trim to. 
 * @maxCharsInString -=------> Maximum number of chars token should be.
 *
-* @return ------------------> Int that is size to trim token to.
+* @return ------------------> uint_least8_t that is size to trim token to.
 *
 */
 uint_least8_t getSizeToTrimTailTo( const char* token, uint_least8_t maxCharsInString ){

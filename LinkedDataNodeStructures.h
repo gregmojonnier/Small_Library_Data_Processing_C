@@ -31,7 +31,8 @@ typedef struct _ListNode {
 *
 * @author ------------------> Item's author.
 * @title -------------------> Item's title.
-* @cid ---------------------> Item's catalog ID.
+* @leftCID -----------------> Item's left half of catalog ID(3 digits).
+* @rightCID ----------------> Item's right half of catalog ID(3 digits).
 * @numCopies ---------------> Number of copies library owns.
 * @patronsCurrentlyRenting -> Linked list of void* to patrons renting item.
 *
@@ -53,7 +54,8 @@ typedef struct {
 * Represents a library patron.
 *
 * @name ------------------> Patron's name.
-* @pid -------------------> Patron's ID.
+* @leftPID ---------------> Patron's left half of ID(1 char).
+* @rightPID---------------> Patron's right half of ID(4 digits).
 * @itemsCurrentlyRenting -> Linked list of void* to items curently renting.
 *
 */

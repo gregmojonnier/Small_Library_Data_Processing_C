@@ -2,7 +2,7 @@
 #define PROCESS_COMMANDS_H
 /*
 * This file contains methods which each map to a legal command.
-* The methods in general are specifing how the more generic
+* These methods in general are specifing how the more generic
 * functions from LinkedDataNodeOperations.h should interpret
 * ListNode*'s void* data.
 *
@@ -13,7 +13,7 @@
 #include "LinkedDataNodeStructures.h"
 #include <stdint.h>
 
-uint_least8_t getCopiesAvailable( const char* cid );
+void getCopiesAvailable( const char* cid );
 void borrowItem( const char* pid, const char* cid );
 void discardCopiesOfItem( uint_least8_t numToDelete, const char* cid);
 void addItem( uint_least8_t numCopies, const char* cid, const char* author, const char* title );

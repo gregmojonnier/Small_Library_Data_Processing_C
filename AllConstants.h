@@ -10,7 +10,6 @@
 */
 
 #define LINE_MAX_SIZE 256
-// pid size max is 6( this is 5 + 1 spot or \0)
 #define PID_MAX_SIZE 6
 #define NAME_MAX_SIZE 36
 #define CID_MIN_SIZE 4

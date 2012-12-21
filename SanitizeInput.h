@@ -13,12 +13,11 @@
 
 #include <stdint.h>
 
-// Main input processing function calls all others
-// based on the first command token
+// Main input processing function
 void processInput( );
 
-// All of these process the specific command and continue 
-// parsing tokens from where processInput left off after the 1st command token
+// These start parsing tokens from where processInput left off after the 1st command token
+// These are pulled out in their own functions due to complexity
 void processPatronCommand();
 void processItemCommand();
 

@@ -1,6 +1,6 @@
 /*
 * This file contains methods which each map to a legal command.
-* The methods in general are specifing how the more generic
+* These methods in general are specifing how the more generic
 * functions from LinkedDataNodeOperations.h should interpret
 * ListNode*'s void* data.
 *
@@ -22,28 +22,26 @@ extern ListNode* g_ItemsHead;
 * getCopiesAvailable
 * ----------------------------------
 *  
-* Finds how many copies of an item with the specified CID
+* Prints how many copies of an item with the specified CID
 * are available to be checked out.
 *
-* @g_ItemsHead ---------------> List to find item in.
 * @cid ---------------------> cid to match node from.
 *
-* @return ------------------> int which is the number of available copies.
 *
+* @return ------------------> None.
 */
-uint_least8_t getCopiesAvailable( const char* cid ){
+void getCopiesAvailable( const char* cid ){
 
 	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, 0 );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
-		return 0;
+		return;
 	}	
 	
 	ItemData* item = (ItemData*)itemNode->data;
 	uint_least8_t copiesAvailable = item->numCopies - getListSize( item->patronsCurrentlyRenting );
 
 	printf("Item %s (%s/%s): %i of %i copies available\n", cid, item->author, item->title, copiesAvailable, item->numCopies );
-	return copiesAvailable;
 }
 
 /*
@@ -55,13 +53,11 @@ uint_least8_t getCopiesAvailable( const char* cid ){
 * inserted into the CID & PID's sublists.(patronsCurrentlyRenting, itemsCurrentlyRenting)
 *
 *
-* @g_ItemsHead ---------------> List of items.
-* @g_PatronsHead -------------> List of patrons.
 * @pid ---------------------> pid who will be borrowing an item.
 * @cid ---------------------> cid of the item to borrow.
 *
-* @return ------------------> _Bool indicating success or failure.
 *
+* @return ------------------> None.
 */
 void borrowItem( const char* pid, const char* cid ){
 	ListNode* patronNode = findNodeWithUID( g_PatronsHead, pid, 1 );
@@ -108,12 +104,11 @@ void borrowItem( const char* pid, const char* cid ){
 * The node is deleted if copies of an item reaches 0.
 *
 *
-* @g_ItemsHead ---------------> List of items.
 * @numToDelete  ------------> Number of copies of the item to delete.
 * @cid ---------------------> cid of the item to discard copies of.
 *
-* @return ------------------> _Bool indicating success or failure.
 *
+* @return ------------------> None.
 */
 void discardCopiesOfItem( uint_least8_t numToDelete, const char* cid){
 
@@ -142,16 +137,15 @@ void discardCopiesOfItem( uint_least8_t numToDelete, const char* cid){
 * ----------------------------------
 *  
 * Allocates a new ItemData, sets all of its info from arguments,
-* inserts node at head of list.
+* inserts node in list in order.
 *
-* @head --------------------> List to insert node into.
 * @numCopies ---------------> number of copies to set into node.
 * @cid ---------------------> cid to set into node.
 * @author ------------------> author to set into node.
 * @title -------------------> title to set into node.
 *
-* @return ------------------> _Bool indicating success or failure.
 *
+* @return ------------------> None.
 */
 void addItem( uint_least8_t numCopies, const char* cid, const char* author, const char* title ){
 
@@ -213,11 +207,10 @@ void addItem( uint_least8_t numCopies, const char* cid, const char* author, cons
 * specified by cid currently checked out.
 *
 *
-* @g_ItemsHead ---------------> List of items.
 * @cid ---------------------> cid who we want to know which patrons have out.
 *
-* @return ------------------> none.
 *
+* @return ------------------> None.
 */
 void patronsWithItemOut( const char* cid ){
 
@@ -239,11 +232,10 @@ void patronsWithItemOut( const char* cid ){
 * out by the patron specified by pid.
 *
 *
-* @g_PatronsHead -------------> List of patrons.
 * @pid ---------------------> pid who we want to know which items has checked out.
 *
-* @return ------------------> none.
 *
+* @return ------------------> None.
 */
 void itemsOutByPatron( const char* pid ){
 
@@ -266,13 +258,11 @@ void itemsOutByPatron( const char* pid ){
 * removed from the CID & PID's sublists.(patronsCurrentlyRenting, itemsCurrentlyRenting)
 *
 *
-* @g_ItemsHead ---------------> List of items.
-* @g_PatronsHead -------------> List of patrons.
 * @pid ---------------------> pid who will be returning an item.
 * @cid ---------------------> cid of the item to return.
 *
-* @return ------------------> _Bool indicating success or failure.
 *
+* @return ------------------> None.
 */
 void returnPatronsItem( const char* pid, const char* cid ){
 
@@ -308,14 +298,13 @@ void returnPatronsItem( const char* pid, const char* cid ){
 * ----------------------------------
 *  
 * Allocates a new PatronData, sets all of its info from arguments,
-* inserts node at head of list.
+* inserts node in list in order.
 *
-* @head --------------------> List to insert node into.
 * @pid ---------------------> pid to set into node.
 * @name --------------------> name to set into node.
 *
-* @return ------------------> _Bool indicating success or failure.
 *
+* @return ------------------> None.
 */
 void addPatron( const char* pid, const char* name ){
 
@@ -352,16 +341,14 @@ void addPatron( const char* pid, const char* name ){
 
 
 /*
-* printAllPatronsStatus
+* printAllListsStatus
 * ----------------------------------
 *  
-* Loops through entire Patron linked list and calls
-* printPatronStatus() on the ItemData.
+* Loops through both lists and prints the status
+* for everything.
 *
-* @g_PatronsHead ---------------> Patron list to print out.
 *
 * @return ------------------> None.
-*
 */
 void printAllListsStatus(){
 
@@ -388,7 +375,7 @@ void printAllListsStatus(){
 *  
 * Prints status of an individual item.
 *
-* @items -------------------> Item to print status of.
+* @item -------------------> Item to print status of.
 *
 * @return ------------------> None.
 *
@@ -425,7 +412,7 @@ void printItemStatus( ItemData* item ){
 *  
 * Prints status of an individual patron.
 *
-* @patron ------------------> patron to print status of.
+* @patron ------------------> Patron to print status of.
 *
 * @return ------------------> None.
 *

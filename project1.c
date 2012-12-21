@@ -15,6 +15,8 @@
 #include "SanitizeInput.h"
 #include "LinkedDataNodeOperations.h"
 
+// Global variables to reduce program size from passing
+// around ListNode pointers between functions
 FILE* g_InputFile = NULL; 
 ListNode* g_PatronsHead = NULL;
 ListNode* g_ItemsHead = NULL;
@@ -43,9 +45,6 @@ int main( int argc, char *argv[] ){
 		return( EXIT_FAILURE );
 	}
 
-	ListNode* patronsHead = NULL;
-	ListNode* itemsHead = NULL;
-
 	g_InputFile = initialPatronsFile;
 	processInput();
 	fclose( initialPatronsFile );
@@ -56,7 +55,6 @@ int main( int argc, char *argv[] ){
 
 	g_InputFile = NULL;
 	processInput();
-
 
 	deleteAndFreeBothLists();
 

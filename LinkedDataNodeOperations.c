@@ -19,16 +19,16 @@ extern ListNode* g_PatronsHead;
 * insertNodeInOrder
 * ----------------------------------
 *  
-* Allocates a new ListNode, sets new nodes dats to data argument,
+* Allocates a new ListNode, sets new nodes data to data argument,
 * inserts node into the list in order. Order is determined by the
 * function passed in newDataHasLowerPrecedence. Data with lower precedence
 * goes lower in the list. Items and Patrons have different criteria for ordering.
 *
 * @currentHead ---------------> List to insert node into.
-* @data ----------------------> Data thats put into node thats inserted into list.
+* @data ----------------------> Data thats put into new node thats inserted into list.
 * @newDataHasLowerPrecedence -> Function pointer to determine data precedence.
 *
-* @return ------------------> _Bool indicating success or failure.
+* @return --------------------> None.
 *
 */
 void insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLowerPrecedence)(void* _newData, void* _currentData) ){
@@ -39,7 +39,6 @@ void insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLow
 		return;
 	}
 
-	// special error message for if allocation fail?
 	ListNode* newNode = (ListNode*) allocate( sizeof( ListNode ) ); 
 	if( newNode == NULL ){
 		printf("Memory allocation failed!\n");
@@ -203,7 +202,6 @@ _Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem ){
 _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, void(*freeVoidDataFunction)(void* data) ){
 	// The address of the outside variable is NULL???
 	// or its an empty list or nodeToDelete is null
-	// return false
 	if( currentHead == NULL || *currentHead == NULL || nodeToDelete == NULL ){
 		return 0;
 	}
@@ -217,14 +215,12 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, void(*freeVoid
 
 		// delete everything related to nodeToDelete
 
-		// DELETE EVERYTHING RELATED TO NEXTNODE
-		// if null then void* data is just a pointer
+		// if null then void* data is just a pointer to ListNode
 		// so no special freeing is needed
 		if( freeVoidDataFunction != NULL ){
 			(*freeVoidDataFunction)(nodeToDelete->data);
 		}
 		unallocate( nodeToDelete );
-
 
 		return 1;
 	}
@@ -239,8 +235,6 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, void(*freeVoid
 			// take nextNode out of list
 			nodeToCheck->next = nextNode->next;
 
-
-			// DELETE EVERYTHING RELATED TO NEXTNODE
 			// if null then void* data is just a pointer
 			// so no special freeing is needed
 			if( freeVoidDataFunction != NULL ){
@@ -266,7 +260,7 @@ _Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, void(*freeVoid
 * @currentHead -------------> List to completely delete.
 * @freeVoidDataFunction ----> Function pointer which determines how to clean up node's void* data.
 *
-* @return ------------------> _Bool indicating success or failure.
+* @return ------------------> None.
 *
 */
 void deleteAndFreeBothLists(){
@@ -287,7 +281,7 @@ void deleteAndFreeBothLists(){
 *
 * @item --------------------> Void* to interpret as ItemData* and unallocate.
 *
-* @return ------------------> _Bool indicating success or failure.
+* @return ------------------> None.
 *
 */
 void freeItemDataStruct( void* item ){
@@ -303,13 +297,11 @@ void freeItemDataStruct( void* item ){
 	while( nodeToDelete != NULL ){
 		ListNode* next = nodeToDelete->next;
 
-
 		// Get data, its a pointer to a ListNode containing an patron
 		PatronData* patronToCollectFrom = (PatronData*)((ListNode*) nodeToDelete->data)->data;
 		// find listnode with data address of p
 
 		deleteNode( &patronToCollectFrom->itemsCurrentlyRenting, findNodeWithData( patronToCollectFrom->itemsCurrentlyRenting, i ), NULL );
-
 
 		unallocate( nodeToDelete );
 
@@ -326,7 +318,7 @@ void freeItemDataStruct( void* item ){
 *
 * @patron ------------------> Void* to interpret as PatronData* and unallocate.
 *
-* @return ------------------> _Bool indicating success or failure.
+* @return ------------------> None.
 *
 */
 void freePatronDataStruct( void* patron ){
@@ -362,8 +354,6 @@ void freePatronDataStruct( void* patron ){
 
 		deleteNode( &pcr, findNodeWithData( pcr, p ), NULL );
 
-
-
 		unallocate( nodeToDelete );
 		nodeToDelete = next;
 	}
@@ -377,9 +367,9 @@ void freePatronDataStruct( void* patron ){
 * Finds a node with the matching UID. The UID is
 * matched to nodes void* data with doesDataMatchUID.
 *
-* @currentHead -------------> List to find node from.
+* @nodeToCheck -------------> List to find node from.
 * @uid ---------------------> UID to look node up with.
-* @doesDataMatchUID --------> Function pointer which determines how to match a UID to node's void* data.
+* @doesDataMatchUID --------> unsigned char indicating if looking up a patron or not.
 
 * @return ------------------> Pointer to node matching UID, or NULL.
 *
@@ -432,7 +422,7 @@ ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, unsigned char
 * Finds a node with its void* data the exact same
 * as the supplied void* data argument.
 *
-* @currentHead -------------> List to find node from.
+* @nodeToCheck -------------> List to find node from.
 * @data --------------------> Data to match node with.
 
 * @return ------------------> Pointer to node matching data, or NULL.
@@ -452,7 +442,7 @@ ListNode* findNodeWithData( ListNode* nodeToCheck, void* data ){
 *  
 * Finds the length of the given list.
 *
-* @currentHead -------------> List to determine size of.
+* @currentNode -------------> List to determine size of.
 
 * @return ------------------> int indicating a list's size.
 *
