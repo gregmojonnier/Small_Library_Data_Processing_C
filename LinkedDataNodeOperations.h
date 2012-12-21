@@ -30,12 +30,12 @@ _Bool freeItemDataStruct( void* item );
 _Bool freePatronDataStruct( void* patron );
 
 // Functions to find a specific node based on a UID from list of ListNodes
-ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) );
+ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, unsigned char lookingUpPatron );
 
 // These are passed into findNodeWithUID() as function pointer
 // to properly match the UID based on what the nodes void* data represents
-_Bool doesPatronMatchUID( const char* uid, void* data );
-_Bool doesItemMatchUID( const char* uid, void* data );
+//_Bool doesPatronMatchUID( const char* uid, void* data );
+//_Bool doesItemMatchUID( const char* uid, void* data );
 
 // Function to find a specific node whose void* data == to the void* data argument
 // This is used for ItemData and PatronData's sublists (patronsCurrentlyRenting, itemsCurrentlyRenting)

@@ -388,10 +388,42 @@ _Bool freePatronDataStruct( void* patron ){
 * @return ------------------> Pointer to node matching UID, or NULL.
 *
 */
-ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, _Bool(*doesDataMatchUID)(const char* uid, void* data) ){
+ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, unsigned char lookingUpPatron ){
 	
-	while( nodeToCheck != NULL && uid != NULL && (!(*doesDataMatchUID)( uid, nodeToCheck->data ) ) ){
+	while( nodeToCheck != NULL && uid != NULL){
 
+		if( lookingUpPatron == 1 ){
+			PatronData* p = (PatronData*)nodeToCheck->data; 
+			if( p == NULL ){
+				return NULL;
+			}
+			unsigned short int rightPID = strtoul( uid+1, NULL, 10 );
+
+			if( *uid == p->leftPID[0] && rightPID == p->rightPID){
+				break;
+			}
+		}
+		else{
+
+			ItemData* i = (ItemData*)nodeToCheck->data; 
+			if( i == NULL ){
+				return NULL;
+			}
+
+			char cidBuffer[ CID_MIN_SIZE ];
+			unsigned char periodLocation = strcspn( uid, PERIOD_WORD_SEPARATOR );
+			
+			strncpy( cidBuffer, uid, periodLocation );
+			cidBuffer[ periodLocation ] = '\0';
+			unsigned short int leftCID = strtoul( cidBuffer, NULL, 10 );
+
+			strcpy( cidBuffer, uid+periodLocation+1 );
+			unsigned short int rightCID = strtoul( cidBuffer, NULL, 10 );
+
+			if( i->leftCID == leftCID && i->rightCID == rightCID ){
+				break;
+			}
+		}
 		nodeToCheck = nodeToCheck->next;
 	}
 	return nodeToCheck;
@@ -410,7 +442,7 @@ ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, _Bool(*doesDa
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool doesPatronMatchUID( const char* uid, void* data ){
+/*_Bool doesPatronMatchUID( const char* uid, void* data ){
 	PatronData* p = (PatronData*)data; 
 	if( p == NULL ){
 		return 0;
@@ -418,7 +450,7 @@ _Bool doesPatronMatchUID( const char* uid, void* data ){
 	unsigned short int rightPID = strtoul( uid+1, NULL, 10 );
 
 	return( *uid == p->leftPID[0] && rightPID == p->rightPID);
-}
+}*/
 
 /*
 * doesItemMatchUID
@@ -433,7 +465,7 @@ _Bool doesPatronMatchUID( const char* uid, void* data ){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool doesItemMatchUID( const char* uid, void* data ){
+/*_Bool doesItemMatchUID( const char* uid, void* data ){
 	ItemData* i = (ItemData*)data; 
 	if( i == NULL ){
 		return 0;
@@ -450,7 +482,7 @@ _Bool doesItemMatchUID( const char* uid, void* data ){
 	unsigned short int rightCID = strtoul( cidBuffer, NULL, 10 );
 
 	return ( i->leftCID == leftCID && i->rightCID == rightCID );
-}
+}*/
 
 
 /*

@@ -20,8 +20,7 @@ void patronsWithItemOut( const char* cid );
 void itemsOutByPatron( const char* pid );
 _Bool returnPatronsItem( const char* pid, const char* cid );
 _Bool addPatron( const char* pid, const char* name );
-void printAllItemsStatus( );
-void printAllPatronsStatus( );
+void printAllListsStatus( );
 void printItemStatus( ItemData* item );
 void printPatronStatus( PatronData* patron );
 #endif

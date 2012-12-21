@@ -48,35 +48,61 @@ void processInput(){
 		char* parsedCommand = strtok( fullLine, DEFAULT_WORD_SEPARATORS );;
 
 		if( parsedCommand != NULL ){
-			
+
 			if( strcmp( parsedCommand, ADD_PATRON_COMMAND ) == 0 ){
 				processPatronCommand();
 			}
 			else if( strcmp( parsedCommand, ADD_ITEM_COMMAND ) == 0 ){
 				processItemCommand();
 			}
-			else if( strcmp( parsedCommand, BORROW_ITEM_COMMAND ) == 0 ){
-				processBorrowCommand();
-			}
-			else if( strcmp( parsedCommand, RETURN_ITEM_COMMAND ) == 0 ){
-				processReturnCommand();
+			else if( strcmp( parsedCommand, BORROW_ITEM_COMMAND ) == 0 || strcmp( parsedCommand, RETURN_ITEM_COMMAND ) == 0 ){
+				const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+				const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+				if( pid != NULL && cid != NULL && isValidPID( pid ) && isValidCID( cid ) ){
+					if( strcmp( parsedCommand, BORROW_ITEM_COMMAND ) == 0 ){
+						borrowItem( pid, cid );	
+					}
+					else{
+						returnPatronsItem( pid, cid );
+					}
+				}
 			}
 			else if( strcmp( parsedCommand, DISCARD_ITEM_COMMAND ) == 0 ){
-				processDiscardCommand();
+
+				const char* numToDiscard = strtok( 0, DEFAULT_WORD_SEPARATORS );
+				const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+				if( numToDiscard != NULL && cid != NULL ){
+					long int nToDiscard = strtoul( numToDiscard, NULL, 10 );
+					if( nToDiscard >= ITEM_NUMS_MIN_SIZE && nToDiscard <= ITEM_NUMS_MAX_SIZE && isValidCID( cid ) ){
+						discardCopiesOfItem( nToDiscard, cid );
+					}
+				}
 			}
-			else if( strcmp( parsedCommand, OUT_COMMAND ) == 0 ){
-					processOutCommand();
-			}
-			else if( strcmp( parsedCommand, AVAILABLE_ITEM_COMMAND ) == 0 ){
-				processAvailableCommand();
+			else if( strcmp( parsedCommand, OUT_COMMAND ) == 0 || strcmp( parsedCommand, AVAILABLE_ITEM_COMMAND ) == 0 ){
+				const char* uid = strtok( 0, DEFAULT_WORD_SEPARATORS );
+
+				if( uid != NULL ){
+					if( isValidCID( uid ) ){
+						if( strcmp( parsedCommand, OUT_COMMAND ) == 0 ){	
+							patronsWithItemOut( uid );
+						}
+						else{
+							getCopiesAvailable( uid );
+						}
+					}
+					else if( isValidPID( uid ) ){
+						itemsOutByPatron( uid );
+					}
+				}
 			}
 		}
 	}
 	if( g_InputFile == NULL ){
 		// if using stdin then we need to print finising statuses of everything
 		printf("\n");
-		printAllItemsStatus( );
-		printAllPatronsStatus( );
+		printAllListsStatus( );
 	}
 }
 
@@ -152,7 +178,7 @@ void processItemCommand(){
 	char cid[ CID_MAX_SIZE ];
 	char truncatedAuthor[ AUTHOR_MAX_SIZE ];
 	char truncatedTitle[ TITLE_MAX_SIZE ];
-	unsigned char numCopies = 0;
+	long int numCopies = 0;
 	unsigned char tokensProcessed = 0;
 
 	for( ; tokensProcessed < 6 && token != NULL; tokensProcessed++ ){
@@ -160,8 +186,8 @@ void processItemCommand(){
 		switch( tokensProcessed ){
 			case 0:
 			  {
-				numCopies = getValidItemsNum( token );
-				if( numCopies < 0 ){
+				numCopies = strtoul( token, NULL, 10 );
+				if(!(numCopies >= ITEM_NUMS_MIN_SIZE && numCopies <= ITEM_NUMS_MAX_SIZE) ){
 					return;
 				}
 
@@ -223,129 +249,6 @@ void processItemCommand(){
 
 
 /*
-* processAvailableCommand
-* ----------------------------------
-*  
-* Processes available command input line and 
-* calls getCopiesAvailable function to output copies of item available.
-*
-* @itemsHead -------==------> Item's list to determine copies available from.
-*
-* @return ------------------> None.
-*
-*/
-void processAvailableCommand(){
-
-	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
-	
-	if( cid != NULL && isValidCID( cid ) ){
-		getCopiesAvailable( cid );
-	}
-}
-
-
-/*
-* processBorrowCommand
-* ----------------------------------
-*  
-* Processes borrow command input line and 
-* calls borrowItem function.
-*
-* @itemsHead -------==------> Item's list to find item were borrowing from.
-* @patronsHead -----==------> Patrons's list to find patron thats borrowing from.
-*
-* @return ------------------> None.
-*
-*/
-void processBorrowCommand(){
-	
-	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
-	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
-
-	if( pid != NULL && cid != NULL && isValidPID( pid ) && isValidCID( cid ) ){
-		borrowItem( pid, cid );	
-	}
-}
-
-/*
-* processDiscardCommand
-* ----------------------------------
-*  
-* Processes discard command input line and 
-* calls discardCopiesOfItem function.
-*
-* @itemsHead -------==------> Item's list to discard copies of item from.
-*
-* @return ------------------> None.
-*
-*/
-// discard n cid
-void processDiscardCommand(){
-
-	const char* numToDiscard = strtok( 0, DEFAULT_WORD_SEPARATORS );
-	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
-
-	if( numToDiscard != NULL && cid != NULL ){
-		unsigned char nToDiscard = getValidItemsNum( numToDiscard );
-
-		if( nToDiscard >= 0 && isValidCID( cid ) ){
-			discardCopiesOfItem( nToDiscard, cid );
-		}
-	}
-}
-
-/*
-* processOutCommand
-* ----------------------------------
-*  
-* Processes out command input line and 
-* calls patronsWithItemOut or itemsOutByPatron
-* depending on if it is with a CID or PID;
-*
-* @itemsHead -------==------> Item's list.
-* @patronsHead -----==------> Patrons's list.
-*
-* @return ------------------> None.
-*
-*/
-void processOutCommand(){
-
-	const char* uid = strtok( 0, DEFAULT_WORD_SEPARATORS );
-
-	if( uid != NULL ){
-		if( isValidCID( uid ) ){
-			patronsWithItemOut( uid );
-		}
-		else if( isValidPID( uid ) ){
-			itemsOutByPatron( uid );
-		}
-	}
-}
-
-/*
-* processReturnCommand
-* ----------------------------------
-*  
-* Processes return command input line and 
-* calls returnPatronsItem.
-*
-* @itemsHead -------==------> Item's list.
-* @patronsHead -----==------> Patrons's list.
-*
-* @return ------------------> None.
-*
-*/
-void processReturnCommand(){
-
-	const char* pid = strtok( 0, DEFAULT_WORD_SEPARATORS );
-	const char* cid = strtok( 0, DEFAULT_WORD_SEPARATORS );
-
-	if( pid != NULL && cid != NULL && isValidPID( pid ) && isValidCID ){
-		returnPatronsItem( pid, cid );
-	}
-}
-
-/*
 * isValidCID
 * ----------------------------------
 *  
@@ -358,11 +261,7 @@ void processReturnCommand(){
 */
 _Bool isValidCID( const char* cid ){
 
-	if( cid == NULL ){
-		return 0;
-	}
-
-	if( strlen( cid ) < CID_MIN_SIZE-1 || strlen( cid ) > CID_MAX_SIZE-1 ){
+	if( cid == NULL || strlen( cid ) < CID_MIN_SIZE-1 || strlen( cid ) > CID_MAX_SIZE-1 ){
 		return 0;
 	}
 
@@ -373,26 +272,24 @@ _Bool isValidCID( const char* cid ){
 	}
 
 
-	const char* start = cid;
+	const char* cidIt = cid;
 
-	while( start != periodLocationIterator ){
-		char ch = *start;
-		if( !isdigit( ch ) ){	
+	while( cidIt != periodLocationIterator ){
+		if( !isdigit( *cidIt ) ){	
 			// not digits before error?
 			return 0;
 		}
-		++start;
+		++cidIt;
 	}
 
-	const char* middle = periodLocationIterator;
+	cidIt = periodLocationIterator;
 
-	while( middle != &cid[ strlen( cid ) ]  ){
-		char ch = *middle;
-		if( !isdigit( ch ) && ch != '.' ){	
+	while( cidIt != &cid[ strlen( cid ) ]  ){
+		if( !isdigit( *cidIt ) && *cidIt != '.' ){	
 			// not digits before error?
 			return 0;
 		}
-		++middle;
+		++cidIt;
 	}
 	return 1;
 }
@@ -410,11 +307,7 @@ _Bool isValidCID( const char* cid ){
 */
 _Bool isValidPID( const char* pid ){
 
-	if( pid == NULL ){
-		return 0;
-	}
-
-	if( isupper( pid[ 0 ] ) ){
+	if( pid != NULL && isupper( pid[ 0 ] ) ){
 		for( unsigned char i = 1; i < PID_MAX_SIZE - 1; ++i ){
 			if( !isdigit( pid[ i ] ) ){
 				// ERROR? must be all digits after uppercase letter
@@ -426,30 +319,6 @@ _Bool isValidPID( const char* pid ){
 	return 0;
 }
 
-/*
-* getValidItemsNum
-* ----------------------------------
-*  
-* Takes a string read in from input
-* converts it to a number and determines if its
-* a valid Item's number. -1 is returned if it is not.
-*
-* @num -------------==------> Char* to be checked.
-*
-* @return ------------------> Int that was converted from char*.
-*
-*/
-char getValidItemsNum( const char* num ){
-	if( num == NULL ){
-		return -1;
-	}
-
-	long int number = strtoul( num, NULL, 10 );
-	if( number < ITEM_NUMS_MIN_SIZE || number > ITEM_NUMS_MAX_SIZE ){
-		return -1;
-	}
-	return number;
-}
 
 /*
 * getSizeToTrimTailTo

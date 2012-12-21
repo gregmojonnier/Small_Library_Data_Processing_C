@@ -19,14 +19,8 @@ void processInput( );
 // parsing tokens from where processInput left off after the 1st command token
 void processPatronCommand();
 void processItemCommand();
-void processAvailableCommand();
-void processBorrowCommand();
-void processDiscardCommand();
-void processOutCommand();
-void processReturnCommand();
 
 _Bool isValidCID( const char* cid );
 _Bool isValidPID( const char* pid );
-char getValidItemsNum( const char* num );
 unsigned char getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
 #endif
