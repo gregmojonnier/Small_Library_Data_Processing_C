@@ -48,15 +48,15 @@ int main( int argc, char *argv[] ){
 
 	g_InputFile = initialPatronsFile;
 	processInput();
+	fclose( initialPatronsFile );
 
 	g_InputFile = initialItemsFile;
 	processInput();
+	fclose( initialItemsFile );
 
 	g_InputFile = NULL;
 	processInput();
 
-	fclose( initialPatronsFile );
-	fclose( initialItemsFile );
 
 	deleteAndFreeBothLists();
 

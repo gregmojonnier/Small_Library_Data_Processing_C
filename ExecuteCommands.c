@@ -31,7 +31,7 @@ extern ListNode* g_ItemsHead;
 * @return ------------------> int which is the number of available copies.
 *
 */
-unsigned char getCopiesAvailable( const char* cid ){
+uint_least8_t getCopiesAvailable( const char* cid ){
 
 	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, 0 );
 	if( itemNode == NULL ){
@@ -40,7 +40,7 @@ unsigned char getCopiesAvailable( const char* cid ){
 	}	
 	
 	ItemData* item = (ItemData*)itemNode->data;
-	unsigned char copiesAvailable = item->numCopies - getListSize( item->patronsCurrentlyRenting );
+	uint_least8_t copiesAvailable = item->numCopies - getListSize( item->patronsCurrentlyRenting );
 
 	printf("Item %s (%s/%s): %i of %i copies available\n", cid, item->author, item->title, copiesAvailable, item->numCopies );
 	return copiesAvailable;
@@ -63,41 +63,39 @@ unsigned char getCopiesAvailable( const char* cid ){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool borrowItem( const char* pid, const char* cid ){
+void borrowItem( const char* pid, const char* cid ){
 	ListNode* patronNode = findNodeWithUID( g_PatronsHead, pid, 1 );
 	if( patronNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", pid);
-		return 0;
+		return;
 	}
 	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, 0 );
 	
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
-		return 0;
+		return;
 	}
 
 	ItemData* item = (ItemData*)itemNode->data;
 	
 	if( getListSize( item->patronsCurrentlyRenting ) == item->numCopies ){
 		fprintf( stderr, "No more copies of %s are available\n", cid );
-		return 0;
+		return;
 	}
 
 	PatronData* patron = (PatronData*) patronNode->data;
 	if( getListSize( patron->itemsCurrentlyRenting ) == 5 ){
 		fprintf( stderr, "%s cannot check out any more items\n", pid );
-		return 0;
+		return;
 	}
 
 	if( findNodeWithData( patron->itemsCurrentlyRenting, itemNode ) != NULL ){
 		fprintf( stderr, "%s already has %s checked out\n", pid, cid );
-		return 0;
+		return;
 	}
 
-	if( insertNodeInOrder( &patron->itemsCurrentlyRenting, itemNode, newItemHasLowerPrecedence ) && insertNodeInOrder( &item->patronsCurrentlyRenting, patronNode, newPatronHasLowerPrecedence ) ){
-		return 1;
-	}
-	return 0;
+	insertNodeInOrder( &patron->itemsCurrentlyRenting, itemNode, newItemHasLowerPrecedence );
+	insertNodeInOrder( &item->patronsCurrentlyRenting, patronNode, newPatronHasLowerPrecedence );
 }
 
 /*
@@ -117,19 +115,19 @@ _Bool borrowItem( const char* pid, const char* cid ){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool discardCopiesOfItem( unsigned char numToDelete, const char* cid){
+void discardCopiesOfItem( uint_least8_t numToDelete, const char* cid){
 
 	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, 0 );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
-		return 0;
+		return;
 	}
 
 	ItemData* item = (ItemData*)itemNode->data;
 
 	if( ( item->numCopies - getListSize( item->patronsCurrentlyRenting ) ) < numToDelete ){
 		fprintf( stderr, "Too few copies of %s are available", cid );
-		return 0;
+		return;
 	}
 	
 	item->numCopies -= numToDelete;
@@ -137,7 +135,6 @@ _Bool discardCopiesOfItem( unsigned char numToDelete, const char* cid){
 	if( item->numCopies == 0 ){
 		deleteNode( &g_ItemsHead, itemNode, freeItemDataStruct );
 	}
-	return 1;
 }
 
 /*
@@ -156,43 +153,43 @@ _Bool discardCopiesOfItem( unsigned char numToDelete, const char* cid){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool addItem( unsigned char numCopies, const char* cid, const char* author, const char* title ){
+void addItem( uint_least8_t numCopies, const char* cid, const char* author, const char* title ){
 
 	ListNode* existingItemNode;
 	if( ( existingItemNode = findNodeWithUID( g_ItemsHead, cid, 0 ) ) != NULL ){
 		ItemData* existingItem = (ItemData*)existingItemNode->data;
 		fprintf( stderr, "Item %s (%s/%s) already associated with (%s/%s)\n", cid, author, title, existingItem->author, existingItem->title ); 
-		return 0;
+		return;
 	}
 
 	ItemData* i = (ItemData*) allocate( sizeof(ItemData) );
 
 	if( i == NULL ){
 		printf("Memory allocation failed!\n");
-		return 0;
+		return;
 	}
 
 	i->author = (char*) allocate( ( sizeof(char) * strlen(author) ) + 1 );
 
 	if( i->author == NULL ){
 		printf("Memory allocation failed!\n");
-		return 0;
+		return;
 	}
 
 	i->title = (char*) allocate( ( sizeof(char) * strlen(title) ) + 1 );
 
 	if( i->title == NULL ){
 		printf("Memory allocation failed!\n");
-		return 0;
+		return;
 	}
 
 	char cidBuffer[ CID_MIN_SIZE ];
 
-	unsigned char periodLocation = strcspn( cid, PERIOD_WORD_SEPARATOR ); 
+	uint_least8_t periodLocation = strcspn( cid, PERIOD_WORD_SEPARATOR ); 
 	
 	strncpy( cidBuffer, cid, periodLocation );
 	cidBuffer[ periodLocation ] = '\0';
-	unsigned short int cidNum = strtoul( cidBuffer, NULL, 10 );
+	uint_least16_t cidNum = strtoul( cidBuffer, NULL, 10 );
 	i->leftCID = cidNum;
 
 	strcpy( cidBuffer, cid+periodLocation+1 );
@@ -205,10 +202,7 @@ _Bool addItem( unsigned char numCopies, const char* cid, const char* author, con
 	strcpy( i->author, author );
 	strcpy( i->title, title );
 	
-	if( !insertNodeInOrder( &g_ItemsHead, i, newItemHasLowerPrecedence ) ){
-		return 0;
-	}
-	return 1;
+	insertNodeInOrder( &g_ItemsHead, i, newItemHasLowerPrecedence );
 }
 
 /*
@@ -231,7 +225,7 @@ void patronsWithItemOut( const char* cid ){
 	
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );		
-		return ;
+		return;
 	}
 
 	printItemStatus( (ItemData*) itemNode->data );
@@ -280,18 +274,18 @@ void itemsOutByPatron( const char* pid ){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool returnPatronsItem( const char* pid, const char* cid ){
+void returnPatronsItem( const char* pid, const char* cid ){
 
 	ListNode* patronNode = findNodeWithUID( g_PatronsHead, pid, 1 );
 	if( patronNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", pid );
-		return 0;
+		return;
 	}
 
 	ListNode* itemNode = findNodeWithUID( g_ItemsHead, cid, 0 );
 	if( itemNode == NULL ){
 		fprintf( stderr, "%s does not exist\n", cid );
-		return 0;
+		return;
 	}
 
 	PatronData* patron = (PatronData*)patronNode->data;
@@ -301,13 +295,12 @@ _Bool returnPatronsItem( const char* pid, const char* cid ){
 
 	if( itemPtrToDelete == NULL ){
 		fprintf( stderr, "%s does not have %s checked out", pid, cid );
-		return 0;
+		return;
 	}
 	else{
 		deleteNode( &patron->itemsCurrentlyRenting, itemPtrToDelete, NULL );
 		deleteNode( &item->patronsCurrentlyRenting, findNodeWithData( item->patronsCurrentlyRenting, patronNode ), NULL );
 	}
-	return 1;
 }
 
 /*
@@ -324,26 +317,26 @@ _Bool returnPatronsItem( const char* pid, const char* cid ){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool addPatron( const char* pid, const char* name ){
+void addPatron( const char* pid, const char* name ){
 
 	ListNode* existingPatron;
 	if( ( existingPatron = findNodeWithUID( g_PatronsHead, pid, 1 ) ) != NULL ){
 		fprintf( stderr, "Patron %s (%s) already associated with (%s)\n", pid, name, ((PatronData*)existingPatron->data)->name );
-		return 0;
+		return;
 	}
 
 	PatronData* p = (PatronData*) allocate( sizeof(PatronData) );
 
 	if( p == NULL ){
 		printf("Memory allocation failed!\n");
-		return 0;
+		return;
 	}
 
 	p->name = (char*) allocate( ( sizeof(char) * strlen(name) ) + 1 );
 
 	if( p->name == NULL ){
 		printf("Memory allocation failed!\n");
-		return 0;
+		return;
 	}
 
 	strcpy( p->name, name );
@@ -354,10 +347,7 @@ _Bool addPatron( const char* pid, const char* name ){
 
 	p->itemsCurrentlyRenting = NULL;
 
-	if( !insertNodeInOrder( &g_PatronsHead, p, newPatronHasLowerPrecedence ) ){
-		return 0;
-	}
-	return 1;
+	insertNodeInOrder( &g_PatronsHead, p, newPatronHasLowerPrecedence );
 }
 
 

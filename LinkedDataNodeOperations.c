@@ -31,19 +31,19 @@ extern ListNode* g_PatronsHead;
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLowerPrecedence)(void* _newData, void* _currentData) ){
+void insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLowerPrecedence)(void* _newData, void* _currentData) ){
 
 	// The address of the outside variable is NULL???
 	// error!
 	if( currentHead == NULL ){
-		return 0;
+		return;
 	}
 
 	// special error message for if allocation fail?
 	ListNode* newNode = (ListNode*) allocate( sizeof( ListNode ) ); 
 	if( newNode == NULL ){
 		printf("Memory allocation failed!\n");
-		return 0;
+		return;
 	}
 	newNode->data = data;
 
@@ -61,7 +61,7 @@ _Bool insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLo
 
 			newNode->next = *currentHead;
 			*currentHead = newNode; 
-			return 1;
+			return;
 		}
 
 		while( nodeToCheck != NULL ){
@@ -85,8 +85,6 @@ _Bool insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLo
 			}
 		}
 	}
-
-	return 1;
 }
 
 /*
@@ -202,7 +200,7 @@ _Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem ){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) ){
+_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, void(*freeVoidDataFunction)(void* data) ){
 	// The address of the outside variable is NULL???
 	// or its an empty list or nodeToDelete is null
 	// return false
@@ -292,10 +290,10 @@ void deleteAndFreeBothLists(){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool freeItemDataStruct( void* item ){
+void freeItemDataStruct( void* item ){
 	ItemData* i = (ItemData*)item;
 	if( i == NULL ){
-		return 0;
+		return;
 	}
 	unallocate( i->author );
 	unallocate( i->title );
@@ -318,7 +316,6 @@ _Bool freeItemDataStruct( void* item ){
 		nodeToDelete = next;
 	}
 	unallocate( i );
-	return 1;
 }
 
 /*
@@ -332,10 +329,10 @@ _Bool freeItemDataStruct( void* item ){
 * @return ------------------> _Bool indicating success or failure.
 *
 */
-_Bool freePatronDataStruct( void* patron ){
+void freePatronDataStruct( void* patron ){
 	PatronData* p = (PatronData*)patron; 
 	if( p == NULL ){
-		return 0;
+		return;
 	}
 	unallocate( p->name );
 	// pid gets taken care of when full struct is unallocated
@@ -371,7 +368,6 @@ _Bool freePatronDataStruct( void* patron ){
 		nodeToDelete = next;
 	}
 	unallocate( p );
-	return 1;
 }
 
 /*
@@ -430,62 +426,6 @@ ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, unsigned char
 }
 
 /*
-* doesPatronMatchUID
-* ----------------------------------
-*  
-* Matches a void* data to a UID by interpreting
-*  it as a PatronData* and looking at its PID.
-*
-* @uid ---------------------> UID to match.
-* @data --------------------> Void* to interpret as PatronData*.
-*
-* @return ------------------> _Bool indicating success or failure.
-*
-*/
-/*_Bool doesPatronMatchUID( const char* uid, void* data ){
-	PatronData* p = (PatronData*)data; 
-	if( p == NULL ){
-		return 0;
-	}
-	unsigned short int rightPID = strtoul( uid+1, NULL, 10 );
-
-	return( *uid == p->leftPID[0] && rightPID == p->rightPID);
-}*/
-
-/*
-* doesItemMatchUID
-* ----------------------------------
-*  
-* Matches a void* data to a UID by interpreting
-*  it as a ItemData* and looking at its CID.
-*
-* @uid ---------------------> UID to match.
-* @data --------------------> Void* to interpret as ItemData*.
-*
-* @return ------------------> _Bool indicating success or failure.
-*
-*/
-/*_Bool doesItemMatchUID( const char* uid, void* data ){
-	ItemData* i = (ItemData*)data; 
-	if( i == NULL ){
-		return 0;
-	}
-
-	char cidBuffer[ CID_MIN_SIZE ];
-	unsigned char periodLocation = strcspn( uid, PERIOD_WORD_SEPARATOR );
-	
-	strncpy( cidBuffer, uid, periodLocation );
-	cidBuffer[ periodLocation ] = '\0';
-	unsigned short int leftCID = strtoul( cidBuffer, NULL, 10 );
-
-	strcpy( cidBuffer, uid+periodLocation+1 );
-	unsigned short int rightCID = strtoul( cidBuffer, NULL, 10 );
-
-	return ( i->leftCID == leftCID && i->rightCID == rightCID );
-}*/
-
-
-/*
 * findNodeWithData
 * ----------------------------------
 *  
@@ -517,9 +457,9 @@ ListNode* findNodeWithData( ListNode* nodeToCheck, void* data ){
 * @return ------------------> int indicating a list's size.
 *
 */
-unsigned char getListSize( ListNode* currentNode ){
+uint_least8_t getListSize( ListNode* currentNode ){
 
-	unsigned char size = 0;
+	uint_least8_t size = 0;
 
 	while( currentNode != NULL ){
 		++size;

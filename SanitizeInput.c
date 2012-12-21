@@ -124,7 +124,7 @@ void processPatronCommand(){
 	char pid[ PID_MAX_SIZE ];
 	char truncatedName[ NAME_MAX_SIZE ];
 
-	unsigned char tokensProcessed = 0;
+	uint_least8_t tokensProcessed = 0;
 
 	for( ; tokensProcessed < 3 && token != NULL; tokensProcessed++ ){
 		switch( tokensProcessed ){
@@ -142,7 +142,7 @@ void processPatronCommand(){
 			  }
 			case 2:
 			  {
-				unsigned char nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? getSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
+				uint_least8_t nameLength = ( strlen( token ) >= NAME_MAX_SIZE ) ? getSizeToTrimTailTo( token, NAME_MAX_SIZE ) : strlen( token ) + 1;	
 				strncpy( truncatedName, token, nameLength -1 );
 				truncatedName[ nameLength - 1 ] = '\0';
 			  }
@@ -154,7 +154,7 @@ void processPatronCommand(){
 		}
 	}
 
-	if( pid != NULL && truncatedName != NULL ){
+	if( truncatedName != NULL ){
 		addPatron( pid, truncatedName );
 	}
 }
@@ -179,7 +179,7 @@ void processItemCommand(){
 	char truncatedAuthor[ AUTHOR_MAX_SIZE ];
 	char truncatedTitle[ TITLE_MAX_SIZE ];
 	long int numCopies = 0;
-	unsigned char tokensProcessed = 0;
+	uint_least8_t tokensProcessed = 0;
 
 	for( ; tokensProcessed < 6 && token != NULL; tokensProcessed++ ){
 	
@@ -205,8 +205,6 @@ void processItemCommand(){
 				else{
 					return;
 				}
-				token = strtok( 0, QUOTE_WORD_SEPARATOR ); 
-				break;
 			  }
 			case 2:
 			case 4:
@@ -216,7 +214,7 @@ void processItemCommand(){
 			  }
 			case 3:
 			  {
-				unsigned char authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
+				uint_least8_t authorLength = ( strlen( token ) >= AUTHOR_MAX_SIZE ) ? getSizeToTrimTailTo( token, AUTHOR_MAX_SIZE ) : strlen( token ) + 1;	
 				
 				strncpy( truncatedAuthor, token, authorLength -1 );
 				truncatedAuthor[ authorLength - 1 ] = '\0';
@@ -226,7 +224,7 @@ void processItemCommand(){
 			  }
 			case 5:
 			  {
-				unsigned char titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? getSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
+				uint_least8_t titleLength = ( strlen( token ) >= TITLE_MAX_SIZE ) ? getSizeToTrimTailTo( token, TITLE_MAX_SIZE ) : strlen( token ) + 1;	
 
 				strncpy( truncatedTitle, token, titleLength -1 );
 				truncatedTitle[ titleLength - 1 ] = '\0';
@@ -242,7 +240,7 @@ void processItemCommand(){
 		}
 	}
 
-	if( cid != NULL && truncatedAuthor != NULL && truncatedTitle != NULL ){
+	if( truncatedAuthor != NULL && truncatedTitle != NULL ){
 		addItem( numCopies, cid, truncatedAuthor, truncatedTitle );
 	}
 }
@@ -259,7 +257,7 @@ void processItemCommand(){
 * @return ------------------> _Bool indicating CID validity.
 *
 */
-_Bool isValidCID( const char* cid ){
+uint_least8_t isValidCID( const char* cid ){
 
 	if( cid == NULL || strlen( cid ) < CID_MIN_SIZE-1 || strlen( cid ) > CID_MAX_SIZE-1 ){
 		return 0;
@@ -305,10 +303,10 @@ _Bool isValidCID( const char* cid ){
 * @return ------------------> _Bool indicating PID validity.
 *
 */
-_Bool isValidPID( const char* pid ){
+uint_least8_t isValidPID( const char* pid ){
 
 	if( pid != NULL && isupper( pid[ 0 ] ) ){
-		for( unsigned char i = 1; i < PID_MAX_SIZE - 1; ++i ){
+		for( uint_least8_t i = 1; i < PID_MAX_SIZE - 1; ++i ){
 			if( !isdigit( pid[ i ] ) ){
 				// ERROR? must be all digits after uppercase letter
 				return 0;
@@ -335,12 +333,12 @@ _Bool isValidPID( const char* pid ){
 * @return ------------------> Int that is size to trim token to.
 *
 */
-unsigned char getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString ){
+uint_least8_t getSizeToTrimTailTo( const char* token, uint_least8_t maxCharsInString ){
 	if( token == NULL ){
 		return 0;
 	}
 
-	unsigned char lastCharIndex = maxCharsInString - 2;
+	uint_least8_t lastCharIndex = maxCharsInString - 2;
 
 	while( token[ lastCharIndex ] == ' ' ){
 		--lastCharIndex;

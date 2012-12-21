@@ -10,10 +10,11 @@
 */
 
 #include "LinkedDataNodeStructures.h"
+#include <stdint.h>
 
 
 // Function to create and insert a ListNode into specified list
-_Bool insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLowerPrecedence)(void* _newData, void* _currentData) );
+void insertNodeInOrder( ListNode** currentHead, void* data, _Bool(*newDataHasLowerPrecedence)(void* _newData, void* _currentData) );
 
 // These are passed into insertNodeInOrder, they determine
 // if the new Patron/Item has a lower precedence than current
@@ -21,13 +22,13 @@ _Bool newPatronHasLowerPrecedence( void* _newPatron, void* _currentPatron );
 _Bool newItemHasLowerPrecedence( void* _newItem, void* _currentItem );
 
 // Functions to delete nodes from list of ListNodes
-_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, _Bool(*freeVoidDataFunction)(void* data) );
+_Bool deleteNode( ListNode** currentHead, ListNode* nodeToDelete, void(*freeVoidDataFunction)(void* data) );
 void deleteAndFreeBothLists( );
 
 // These are passed into delete node functions as function pointers
 // to insure proper clean up based on what the nodes void* data represents
-_Bool freeItemDataStruct( void* item );
-_Bool freePatronDataStruct( void* patron );
+void freeItemDataStruct( void* item );
+void freePatronDataStruct( void* patron );
 
 // Functions to find a specific node based on a UID from list of ListNodes
 ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, unsigned char lookingUpPatron );
@@ -43,6 +44,6 @@ ListNode* findNodeWithUID( ListNode* nodeToCheck, const char* uid, unsigned char
 ListNode* findNodeWithData( ListNode* nodeToCheck, void* data );
 
 // General utility LL functions
-unsigned char getListSize( ListNode* currentNode );
+uint_least8_t getListSize( ListNode* currentNode );
 
 #endif

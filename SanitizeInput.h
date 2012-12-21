@@ -11,6 +11,8 @@
 * @author Greg Mojonnier
 */
 
+#include <stdint.h>
+
 // Main input processing function calls all others
 // based on the first command token
 void processInput( );
@@ -20,7 +22,7 @@ void processInput( );
 void processPatronCommand();
 void processItemCommand();
 
-_Bool isValidCID( const char* cid );
-_Bool isValidPID( const char* pid );
-unsigned char getSizeToTrimTailTo( const char* token, unsigned short int maxCharsInString );
+uint_least8_t isValidCID( const char* cid );
+uint_least8_t isValidPID( const char* pid );
+uint_least8_t getSizeToTrimTailTo( const char* token, uint_least8_t maxCharsInString );
 #endif
