@@ -65,7 +65,7 @@ void processInput(){
 				processDiscardCommand();
 			}
 			else if( strcmp( parsedCommand, OUT_COMMAND ) == 0 ){
-				processOutCommand();
+					processOutCommand();
 			}
 			else if( strcmp( parsedCommand, AVAILABLE_ITEM_COMMAND ) == 0 ){
 				processAvailableCommand();

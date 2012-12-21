@@ -424,14 +424,11 @@ void printItemStatus( ItemData* item ){
 
 	ListNode* patronsCurrentlyRenting = item->patronsCurrentlyRenting;
 
-	char fullCID[ CID_MAX_SIZE ];
-	sprintf( fullCID, "%d.%d", item->leftCID, item->rightCID );
-
 	if( patronsCurrentlyRenting == NULL ){
-		printf( "Item %s (%s/%s) is not checked out\n", fullCID, item->author, item->title ); 
+		printf( "Item %d.%d (%s/%s) is not checked out\n", item->leftCID, item->rightCID, item->author, item->title ); 
 	}
 	else{
-		printf( "Item %s (%s/%s) is checked out to:\n", fullCID, item->author, item->title );
+		printf( "Item %d.%d (%s/%s) is checked out to:\n", item->leftCID, item->rightCID, item->author, item->title );
 
 		while( patronsCurrentlyRenting != NULL ){
 			PatronData* p = (PatronData*) ((ListNode*)patronsCurrentlyRenting->data)->data;
@@ -461,23 +458,17 @@ void printPatronStatus( PatronData* patron ){
 
 	ListNode* itemsCurrentlyRenting = patron->itemsCurrentlyRenting;
 
-	char fullPID[ PID_MAX_SIZE ];
-	sprintf( fullPID, "%s%04i", patron->leftPID, patron->rightPID );
-
 	if( itemsCurrentlyRenting == NULL ){
-		printf( "Patron %s (%s) has no items checked out\n", fullPID, patron->name ); 
+		printf( "Patron %s%04i (%s) has no items checked out\n", patron->leftPID, patron->rightPID, patron->name ); 
 	}
 	else{
-		printf( "Patron %s (%s) has these items checked out:\n", fullPID, patron->name );
+		printf( "Patron %s%04i (%s) has these items checked out:\n", patron->leftPID, patron->rightPID, patron->name );
 
 		while( itemsCurrentlyRenting != NULL ){
 			ItemData* i = (ItemData*)((ListNode*)itemsCurrentlyRenting->data)->data;
 
 			if( i != NULL ){
-				char fullCID[ CID_MAX_SIZE ];
-				sprintf( fullCID, "%d.%d", i->leftCID, i->rightCID );
-
-				printf( "   %s (%s/%s)\n", fullCID, i->author, i->title );
+				printf( "   %d.%d (%s/%s)\n", i->leftCID, i->rightCID, i->author, i->title );
 			}
 			itemsCurrentlyRenting = itemsCurrentlyRenting->next;
 		}

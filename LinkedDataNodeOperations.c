@@ -307,13 +307,10 @@ _Bool freeItemDataStruct( void* item ){
 
 
 		// Get data, its a pointer to a ListNode containing an patron
-		ListNode* patronToCollectItemFromNode = (ListNode*)nodeToDelete->data;
-		PatronData* patronToCollectFrom = (PatronData*)patronToCollectItemFromNode->data;
+		PatronData* patronToCollectFrom = (PatronData*)((ListNode*) nodeToDelete->data)->data;
 		// find listnode with data address of p
 
-		ListNode* pcr = patronToCollectFrom->itemsCurrentlyRenting;
-
-		deleteNode( &pcr, findNodeWithData( pcr, i ), NULL );
+		deleteNode( &patronToCollectFrom->itemsCurrentlyRenting, findNodeWithData( patronToCollectFrom->itemsCurrentlyRenting, i ), NULL );
 
 
 		unallocate( nodeToDelete );
@@ -361,8 +358,7 @@ _Bool freePatronDataStruct( void* patron ){
 
 
 		// Get data, its a pointer to a ListNode containing an item
-		ListNode* itemToReturnNode = (ListNode*)nodeToDelete->data;
-		ItemData* itemToReturn = (ItemData*)itemToReturnNode->data;
+		ItemData* itemToReturn = (ItemData*)((ListNode*)nodeToDelete->data)->data;
 		// find listnode with data address of p
 
 		ListNode* pcr = itemToReturn->patronsCurrentlyRenting;
@@ -443,18 +439,15 @@ _Bool doesItemMatchUID( const char* uid, void* data ){
 		return 0;
 	}
 
-	char leftCIDBuffer[ CID_MIN_SIZE ];
-	char rightCIDBuffer[ CID_MIN_SIZE ];
-
+	char cidBuffer[ CID_MIN_SIZE ];
 	unsigned char periodLocation = strcspn( uid, PERIOD_WORD_SEPARATOR );
 	
-	strncpy( leftCIDBuffer, uid, periodLocation );
-	leftCIDBuffer[ periodLocation ] = '\0';
+	strncpy( cidBuffer, uid, periodLocation );
+	cidBuffer[ periodLocation ] = '\0';
+	unsigned short int leftCID = strtoul( cidBuffer, NULL, 10 );
 
-	strcpy( rightCIDBuffer, uid+periodLocation+1 );
-
-	unsigned short int leftCID = strtoul( leftCIDBuffer, NULL, 10 );
-	unsigned short int rightCID = strtoul( rightCIDBuffer, NULL, 10 );
+	strcpy( cidBuffer, uid+periodLocation+1 );
+	unsigned short int rightCID = strtoul( cidBuffer, NULL, 10 );
 
 	return ( i->leftCID == leftCID && i->rightCID == rightCID );
 }
